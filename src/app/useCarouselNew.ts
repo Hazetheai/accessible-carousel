@@ -7,12 +7,17 @@ type ThrottleFunction = <T extends unknown[]>(
 
 const throttle: ThrottleFunction = (fn, delay) => {
   let lastCallTime = 0;
+  let rafId: number | null = null;
   return (...args) => {
-    const now = Date.now();
-    if (now - lastCallTime >= delay) {
-      fn(...args);
-      lastCallTime = now;
-    }
+    if (rafId) return;
+    rafId = requestAnimationFrame(() => {
+      const now = performance.now();
+      if (now - lastCallTime >= delay) {
+        fn(...args);
+        lastCallTime = now;
+      }
+      rafId = null;
+    });
   };
 };
 
@@ -52,18 +57,9 @@ function detectScrollDirection(
   return { isScrollingTowardsEnd, isScrollingTowardsStart };
 }
 
-/**
- * Returns `true` if the given element is in a horizontal RTL writing mode.
- * @param {HTMLElement} element
- */
 const isRtl = (element: HTMLElement): boolean =>
   window.getComputedStyle(element).direction === "rtl";
 
-/**
- * Returns the distance from the starting edge of the viewport to the given focal point on the element.
- * @param {HTMLElement} element
- * @param {'start'|'center'|'end'} [focalPoint]
- */
 interface GetDistanceToFocalPointParams {
   scrollContainer: HTMLElement;
   element: HTMLElement;
@@ -156,7 +152,7 @@ const useCarouselNew = ({
           focalPoint: "center",
         })
       );
-      // console.log("focalPoints", focalPoints);
+
       const closestFocalPoint = focalPoints.reduce((prev, curr) =>
         Math.abs(curr - center) < Math.abs(prev - center) ? curr : prev
       );
@@ -169,8 +165,7 @@ const useCarouselNew = ({
       const focalPoint = focalPoints[closestFocalPointIndex];
       const isCloserToEnd = focalPoint > width / 2;
       const isCloserToStart = focalPoint < width / 2;
-      // console.log("isCloserToStart", isCloserToStart);
-      // console.log("isCloserToEnd", isCloserToEnd);
+
       setFocalPointImage({
         index: closestFocalPointIndex,
         isCloserToStart,
@@ -185,8 +180,6 @@ const useCarouselNew = ({
         isScrollingTowardsEnd,
         isScrollingTowardsStart,
       });
-
-      // TODO: set aria-disabled attribute on navigation controls
     };
 
     const scrollContainer = scrollContainerRef.current;
@@ -258,25 +251,6 @@ const useCarouselNew = ({
               scrollContainer
             )
           : 0;
-      console.log("visiblePercentage", visiblePercentage);
-      const shouldNavigateToNextItem =
-        direction === "end" &&
-        1 + visiblePercentage > threshold &&
-        !!distanceToNextItem;
-
-      const shouldNavigateToPreviousItem =
-        direction === "start" &&
-        visiblePercentage > threshold &&
-        !!distanceToPreviousItem;
-
-      console.log("shouldNavigateToNextItem", shouldNavigateToNextItem);
-      console.log("shouldNavigateToPreviousItem", shouldNavigateToPreviousItem);
-
-      if (shouldNavigateToPreviousItem || shouldNavigateToNextItem) {
-        targetFocalPoint =
-          direction === "end" ? distanceToNextItem : distanceToPreviousItem;
-        break;
-      }
 
       const distanceToItem = getDistanceToFocalPoint({
         focalPointOffset,
@@ -286,8 +260,6 @@ const useCarouselNew = ({
       });
 
       if (
-        shouldNavigateToNextItem ||
-        shouldNavigateToPreviousItem ||
         (direction === "start" && distanceToItem + 1 < scrollContainerCenter) ||
         (direction === "end" && distanceToItem - scrollContainerCenter > 1)
       ) {
@@ -299,7 +271,7 @@ const useCarouselNew = ({
     // This should never happen, but it doesn't hurt to check
     if (typeof targetFocalPoint === "undefined") return;
     // RTL flips the direction
-    // console.log("targetFocalPoint", targetFocalPoint);
+
     const sign = isRtl(scrollContainer) ? -1 : 1;
     const scrollAmount = sign * (targetFocalPoint - scrollContainerCenter);
     scrollContainer.scrollBy({ left: scrollAmount });
@@ -322,7 +294,6 @@ const useCarouselNew = ({
     }
   };
 
-  // console.log("currentIndex", currentIndex);
   return {
     focalPointImage,
     scrollContainerRef,
