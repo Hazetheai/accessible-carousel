@@ -16,6 +16,21 @@ const throttle: ThrottleFunction = (fn, delay) => {
   };
 };
 
+function detectScrollDirection(
+  scrollLeft: number = 0,
+  prevScrollLeft: React.MutableRefObject<number>,
+  threshold = 0.01
+) {
+  const scrollDelta = scrollLeft - prevScrollLeft.current;
+  const isScrollingTowardsEnd = scrollDelta > 0;
+  const isScrollingTowardsStart = scrollDelta < 0;
+  prevScrollLeft.current = isScrollingTowardsEnd
+    ? scrollLeft - threshold
+    : scrollLeft + threshold;
+
+  return { isScrollingTowardsEnd, isScrollingTowardsStart };
+}
+
 /**
  * Returns `true` if the given element is in a horizontal RTL writing mode.
  * @param {HTMLElement} element
@@ -57,19 +72,25 @@ const useCarouselNew = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [edges, setEdges] = useState({ start: true, end: false });
+  const [carouselPosition, setCarouselPosition] = useState({
+    start: true,
+    end: false,
+    isScrollingTowardsEnd: false,
+    isScrollingTowardsStart: false,
+  });
   const [focalPointImage, setFocalPointImage] = useState({
     index: 0,
     isCloserToStart: initialIndex === 0,
     isCloserToEnd: false,
   });
+  const prevScrollLeft = useRef(0);
   useEffect(() => {
     const handleCarouselScroll = () => {
       const scrollContainer = scrollContainerRef.current;
       if (!scrollContainer) return;
 
       // scrollLeft is negative in a right-to-left writing mode
-      const scrollLeft = Math.abs(scrollContainer.scrollLeft);
+      const scrollLeft = Math.abs(scrollContainer.scrollLeft) || 0;
 
       // off-by-one correction for Chrome, where clientWidth is sometimes rounded down
       const width = scrollContainer.clientWidth + 1;
@@ -104,7 +125,15 @@ const useCarouselNew = ({
         isCloserToStart,
         isCloserToEnd,
       });
-      setEdges({ start: isAtStart, end: isAtEnd });
+      const { isScrollingTowardsEnd, isScrollingTowardsStart } =
+        detectScrollDirection(scrollLeft, prevScrollLeft, 0.1);
+
+      setCarouselPosition({
+        start: isAtStart,
+        end: isAtEnd,
+        isScrollingTowardsEnd,
+        isScrollingTowardsStart,
+      });
 
       // TODO: set aria-disabled attribute on navigation controls
     };
@@ -116,13 +145,14 @@ const useCarouselNew = ({
       throttle(handleCarouselScroll, 100)
     );
     scrollContainer.addEventListener("scrollend", handleCarouselScroll);
+    scrollContainer.addEventListener("scrollend", handleCarouselScroll);
     handleCarouselScroll();
 
     return () => {
       scrollContainer.removeEventListener("scroll", handleCarouselScroll);
       scrollContainer.removeEventListener("scrollend", handleCarouselScroll);
     };
-  }, []);
+  }, [slidesCount]);
 
   const navigateToNextItem = throttle((direction: "start" | "end") => {
     const scrollContainer = scrollContainerRef.current;
@@ -146,7 +176,7 @@ const useCarouselNew = ({
       if (focalPoint === "none") {
         focalPoint = "center";
       }
-      // @ts-ignore
+
       const distanceToItem = getDistanceToFocalPoint(mediaItem, focalPoint);
       if (
         (direction === "start" && distanceToItem + 1 < scrollContainerCenter) ||
@@ -177,8 +207,17 @@ const useCarouselNew = ({
       setCurrentIndex(newTargetIndex);
     }
   }, 200);
-  console.log("currentIndex", currentIndex);
-  return { scrollContainerRef, currentIndex, navigateToNextItem, edges };
+
+  if(carouselPosition.isScrollingTowardsEnd && focalPointImage.isCloserToEnd) {
+    console.log(`Shoould navigate to next item`);
+  }
+  // console.log("currentIndex", currentIndex);
+  return {
+    scrollContainerRef,
+    currentIndex,
+    navigateToNextItem,
+    carouselPosition,
+  };
 };
 
-export default useCarouselNew;
+export { useCarouselNew };
