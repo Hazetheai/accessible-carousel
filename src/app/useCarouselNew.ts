@@ -73,7 +73,6 @@ const getDistanceToFocalPoint = ({
   focalPoint = "center",
   focalPointOffset = 0,
 }: GetDistanceToFocalPointParams): number => {
-  console.log("focalPointOffset", focalPointOffset);
   //  Calculate the distance from the starting edge of the viewport to edge of the scrollContainer to account for padding, margins other elements etc.
   const scrollContainerRect = scrollContainer.getBoundingClientRect();
   const offset = focalPointOffset * scrollContainer.clientWidth;
@@ -207,6 +206,9 @@ const useCarouselNew = ({
     );
     mediaItems = direction === "start" ? mediaItems.reverse() : mediaItems;
 
+    // Only used when direction === "start" & moving to image above threshold
+    const reversedMediaItems = mediaItems.slice().reverse();
+
     // Basic idea: Find the first item whose focal point is past
     // the scroll container's center in the direction of travel.
     const scrollContainerCenter = getDistanceToFocalPoint({
@@ -219,13 +221,19 @@ const useCarouselNew = ({
 
     const nextItem = mediaItems[focalPointImage.index].nextElementSibling;
     const previousItem =
-      mediaItems[focalPointImage.index].previousElementSibling;
+      reversedMediaItems[focalPointImage.index].previousElementSibling;
+    const isNotStartOrEnd =
+      focalPointImage.index !== 0 && focalPointImage.index !== slidesCount - 1;
 
     for (const mediaItem of mediaItems) {
       let focalPoint = window.getComputedStyle(mediaItem).scrollSnapAlign;
       if (focalPoint === "none") {
         focalPoint = "center";
       }
+      const isFocalImage =
+        (direction === "start" ? reversedMediaItems : mediaItems).indexOf(
+          mediaItem
+        ) === focalPointImage.index;
 
       const distanceToNextItem = nextItem
         ? getDistanceToFocalPoint({
@@ -243,15 +251,44 @@ const useCarouselNew = ({
             focalPoint,
           })
         : undefined;
-      // const indexOfItem = mediaItems.indexOf(mediaItem);
-      const visiblePercentage =
-        nextItem || previousItem
-          ? calculateVisiblePercentage(
-              direction === "end" ? nextItem : previousItem,
-              scrollContainer
-            )
-          : 0;
 
+      // if the focal image visible is > threshold,
+      // and the direction of travel is towards the end,
+      // then center the following image
+      // if the focal image threshold is < threshold,
+      // and the direction of travel is towards the end,
+      // then center the focal image & vice versa
+
+      if (isFocalImage && isNotStartOrEnd) {
+        const visiblePercentage = calculateVisiblePercentage(
+          mediaItem,
+          scrollContainer
+        );
+        const isFocalPointAboveThreshold = visiblePercentage > threshold;
+
+        if (
+          direction === "end" &&
+          distanceToNextItem &&
+          distanceToNextItem > 0 &&
+          isFocalPointAboveThreshold
+        ) {
+          targetFocalPoint = distanceToNextItem;
+
+          break;
+        }
+        if (
+          direction === "start" &&
+          distanceToPreviousItem &&
+          distanceToPreviousItem < 0 &&
+          isFocalPointAboveThreshold
+        ) {
+          targetFocalPoint = distanceToPreviousItem;
+          break;
+        }
+      }
+
+      // Ususal case: find the first item whose focal point is past
+      // the scroll container's center in the direction of travel.
       const distanceToItem = getDistanceToFocalPoint({
         focalPointOffset,
         scrollContainer,
