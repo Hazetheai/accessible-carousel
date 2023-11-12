@@ -69,23 +69,29 @@ const getDistanceToFocalPoint = (
   element: HTMLElement,
   focalPoint: "start" | "center" | "end" = "center"
 ): number => {
+  //  Calculate the distance from the starting edge of the viewport to edge of the scrollContainer to account for padding, margins other elements etc.
+  const scrollContainerRect = scrollContainer.getBoundingClientRect();
+  const offsetLeft = scrollContainerRect.left;
+  const offsetRight = scrollContainerRect.right;
+
   const isHorizontalRtl = isRtl(element);
   const scrollContainerWidth = scrollContainer.clientWidth;
-  // console.log("scrollContainerWidth", scrollContainerWidth);
   const rect = element.getBoundingClientRect();
-  // console.log("rect", rect);
   switch (focalPoint) {
     case "start":
-      return isHorizontalRtl ? scrollContainerWidth - rect.right : rect.left;
+      return isHorizontalRtl
+        ? scrollContainerWidth - rect.right - offsetRight
+        : rect.left - offsetLeft;
     case "end":
-      return isHorizontalRtl ? scrollContainerWidth - rect.left : rect.right;
+      return isHorizontalRtl
+        ? scrollContainerWidth - rect.left - offsetRight
+        : rect.right - offsetLeft;
     case "center":
     default: {
       const centerFromLeft = rect.left + rect.width / 2;
-      // console.log("centerFromLeft", centerFromLeft);
       return isHorizontalRtl
-        ? scrollContainerWidth - centerFromLeft
-        : centerFromLeft;
+        ? scrollContainerWidth - centerFromLeft - offsetRight
+        : centerFromLeft - offsetLeft;
     }
   }
 };
