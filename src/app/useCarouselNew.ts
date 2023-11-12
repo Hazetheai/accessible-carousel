@@ -64,15 +64,25 @@ const isRtl = (element: HTMLElement): boolean =>
  * @param {HTMLElement} element
  * @param {'start'|'center'|'end'} [focalPoint]
  */
-const getDistanceToFocalPoint = (
-  scrollContainer: HTMLElement,
-  element: HTMLElement,
-  focalPoint: "start" | "center" | "end" = "center"
-): number => {
+interface GetDistanceToFocalPointParams {
+  scrollContainer: HTMLElement;
+  element: HTMLElement;
+  focalPoint?: "start" | "center" | "end";
+  focalPointOffset?: number;
+}
+
+const getDistanceToFocalPoint = ({
+  scrollContainer,
+  element,
+  focalPoint = "center",
+  focalPointOffset = 0,
+}: GetDistanceToFocalPointParams): number => {
+  console.log("focalPointOffset", focalPointOffset);
   //  Calculate the distance from the starting edge of the viewport to edge of the scrollContainer to account for padding, margins other elements etc.
   const scrollContainerRect = scrollContainer.getBoundingClientRect();
-  const offsetLeft = scrollContainerRect.left;
-  const offsetRight = scrollContainerRect.right;
+  const offset = focalPointOffset * scrollContainer.clientWidth;
+  const offsetLeft = offset + scrollContainerRect.left;
+  const offsetRight = offset + scrollContainerRect.right;
 
   const isHorizontalRtl = isRtl(element);
   const scrollContainerWidth = scrollContainer.clientWidth;
@@ -99,9 +109,11 @@ const getDistanceToFocalPoint = (
 const useCarouselNew = ({
   slidesCount,
   initialIndex = 0,
+  focalPointOffset = 0,
 }: {
   slidesCount: number;
   initialIndex?: number;
+  focalPointOffset?: number;
 }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -137,7 +149,12 @@ const useCarouselNew = ({
       );
       const center = scrollContainer.clientWidth / 2;
       const focalPoints = mediaItems.map((mediaItem) =>
-        getDistanceToFocalPoint(scrollContainer, mediaItem, "center")
+        getDistanceToFocalPoint({
+          focalPointOffset,
+          scrollContainer,
+          element: mediaItem,
+          focalPoint: "center",
+        })
       );
       // console.log("focalPoints", focalPoints);
       const closestFocalPoint = focalPoints.reduce((prev, curr) =>
@@ -176,9 +193,8 @@ const useCarouselNew = ({
     if (!scrollContainer) return;
     scrollContainer.addEventListener(
       "scroll",
-      throttle(handleCarouselScroll, 100)
+      throttle(handleCarouselScroll, 10)
     );
-    scrollContainer.addEventListener("scrollend", handleCarouselScroll);
     scrollContainer.addEventListener("scrollend", handleCarouselScroll);
     handleCarouselScroll();
 
@@ -186,7 +202,7 @@ const useCarouselNew = ({
       scrollContainer.removeEventListener("scroll", handleCarouselScroll);
       scrollContainer.removeEventListener("scrollend", handleCarouselScroll);
     };
-  }, [slidesCount]);
+  }, [slidesCount, focalPointOffset]);
 
   const navigateToNextItem = (direction: "start" | "end") => {
     const threshold = 0.8;
@@ -200,11 +216,12 @@ const useCarouselNew = ({
 
     // Basic idea: Find the first item whose focal point is past
     // the scroll container's center in the direction of travel.
-    const scrollContainerCenter = getDistanceToFocalPoint(
+    const scrollContainerCenter = getDistanceToFocalPoint({
+      focalPointOffset,
       scrollContainer,
-      scrollContainer,
-      "center"
-    );
+      element: scrollContainer,
+      focalPoint: "center",
+    });
     let targetFocalPoint;
 
     const nextItem = mediaItems[focalPointImage.index].nextElementSibling;
@@ -218,18 +235,20 @@ const useCarouselNew = ({
       }
 
       const distanceToNextItem = nextItem
-        ? getDistanceToFocalPoint(
+        ? getDistanceToFocalPoint({
+            focalPointOffset,
             scrollContainer,
-            nextItem as HTMLElement,
-            focalPoint
-          )
+            element: nextItem as HTMLElement,
+            focalPoint,
+          })
         : undefined;
       const distanceToPreviousItem = previousItem
-        ? getDistanceToFocalPoint(
+        ? getDistanceToFocalPoint({
+            focalPointOffset,
             scrollContainer,
-            previousItem as HTMLElement,
-            focalPoint
-          )
+            element: previousItem as HTMLElement,
+            focalPoint,
+          })
         : undefined;
       // const indexOfItem = mediaItems.indexOf(mediaItem);
       const visiblePercentage =
@@ -239,10 +258,10 @@ const useCarouselNew = ({
               scrollContainer
             )
           : 0;
-
+      console.log("visiblePercentage", visiblePercentage);
       const shouldNavigateToNextItem =
         direction === "end" &&
-        visiblePercentage > threshold &&
+        1 + visiblePercentage > threshold &&
         !!distanceToNextItem;
 
       const shouldNavigateToPreviousItem =
@@ -250,8 +269,8 @@ const useCarouselNew = ({
         visiblePercentage > threshold &&
         !!distanceToPreviousItem;
 
-      // console.log("shouldNavigateToNextItem", shouldNavigateToNextItem);
-      // console.log("shouldNavigateToPreviousItem", shouldNavigateToPreviousItem);
+      console.log("shouldNavigateToNextItem", shouldNavigateToNextItem);
+      console.log("shouldNavigateToPreviousItem", shouldNavigateToPreviousItem);
 
       if (shouldNavigateToPreviousItem || shouldNavigateToNextItem) {
         targetFocalPoint =
@@ -259,11 +278,12 @@ const useCarouselNew = ({
         break;
       }
 
-      const distanceToItem = getDistanceToFocalPoint(
+      const distanceToItem = getDistanceToFocalPoint({
+        focalPointOffset,
         scrollContainer,
-        mediaItem,
-        focalPoint
-      );
+        element: mediaItem,
+        focalPoint,
+      });
 
       if (
         shouldNavigateToNextItem ||
@@ -289,8 +309,12 @@ const useCarouselNew = ({
     const newTargetIndex = newMediaItems.findIndex(
       (mediaItem) =>
         Math.abs(
-          getDistanceToFocalPoint(scrollContainer, mediaItem, "center") -
-            targetFocalPoint
+          getDistanceToFocalPoint({
+            focalPointOffset,
+            scrollContainer,
+            element: mediaItem,
+            focalPoint: "center",
+          }) - targetFocalPoint
         ) < 1
     );
     if (newTargetIndex !== -1) {

@@ -32,6 +32,7 @@ export default function Home() {
     document.documentElement.classList.add("js");
   }, []);
   const [isSlideShow, setIsSlideShow] = useState(false);
+  const [focalPointOffset, setfocalPointOffset] = useState(0);
   const {
     currentIndex,
     focalPointImage,
@@ -40,7 +41,9 @@ export default function Home() {
     carouselPosition,
   } = useCarouselNew({
     slidesCount: SLIDES_COUNT,
+    focalPointOffset,
   });
+
   // console.log("carouselPosition", carouselPosition);
 
   return (
@@ -51,9 +54,23 @@ export default function Home() {
       <button onClick={() => setIsSlideShow(!isSlideShow)}>
         Toggle Slideshow {isSlideShow ? "Off" : "On"}
       </button>
+      <div>
+        <label htmlFor="focal-point-offset">Focal Point Offset:</label>
+        <input
+          type="range"
+          id="focal-point-offset"
+          name="focal-point-offset"
+          min="-0.5"
+          max=".5"
+          step="0.01"
+          value={focalPointOffset}
+          onChange={(e) => setfocalPointOffset(parseFloat(e.target.value))}
+        />
+      </div>
 
       <section className={`carousel ${isSlideShow ? "slideshow" : ""}`}>
         <div
+          style={{ "--center-point-offset": `${1 + focalPointOffset * 2}` }}
           tabIndex={0}
           className={`carousel-scroll-container ${
             !!navigateToNextItem ? "with-js" : ""
@@ -82,7 +99,7 @@ export default function Home() {
                   id={`carousel-item-${index + 1}`}
                   aria-roledescription="Slide"
                 >
-                  <div className="center-point"></div>
+                  {/* <div className="center-point"></div> */}
                   <figure className="carousel-item-wrapper">
                     <figcaption id={`carousel-item-${index + 1}-heading`}>
                       Product {index + 1} Title
