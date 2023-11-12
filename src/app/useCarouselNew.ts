@@ -16,6 +16,27 @@ const throttle: ThrottleFunction = (fn, delay) => {
   };
 };
 
+function calculateVisiblePercentage(
+  element: HTMLElement | null,
+  scrollContainer: HTMLElement
+): number {
+  if (!element) return 0;
+  const elementRect = element.getBoundingClientRect();
+  const containerRect = scrollContainer.getBoundingClientRect();
+
+  const visibleWidth =
+    Math.min(elementRect.right, containerRect.right) -
+    Math.max(elementRect.left, containerRect.left);
+  const visibleHeight =
+    Math.min(elementRect.bottom, containerRect.bottom) -
+    Math.max(elementRect.top, containerRect.top);
+
+  const visibleArea = visibleWidth * visibleHeight;
+  const elementArea = elementRect.width * elementRect.height;
+
+  return visibleArea / elementArea;
+}
+
 function detectScrollDirection(
   scrollLeft: number = 0,
   prevScrollLeft: React.MutableRefObject<number>,
@@ -44,21 +65,27 @@ const isRtl = (element: HTMLElement): boolean =>
  * @param {'start'|'center'|'end'} [focalPoint]
  */
 const getDistanceToFocalPoint = (
+  scrollContainer: HTMLElement,
   element: HTMLElement,
   focalPoint: "start" | "center" | "end" = "center"
 ): number => {
   const isHorizontalRtl = isRtl(element);
-  const documentWidth = document.documentElement.clientWidth;
+  const scrollContainerWidth = scrollContainer.clientWidth;
+  // console.log("scrollContainerWidth", scrollContainerWidth);
   const rect = element.getBoundingClientRect();
+  // console.log("rect", rect);
   switch (focalPoint) {
     case "start":
-      return isHorizontalRtl ? documentWidth - rect.right : rect.left;
+      return isHorizontalRtl ? scrollContainerWidth - rect.right : rect.left;
     case "end":
-      return isHorizontalRtl ? documentWidth - rect.left : rect.right;
+      return isHorizontalRtl ? scrollContainerWidth - rect.left : rect.right;
     case "center":
     default: {
       const centerFromLeft = rect.left + rect.width / 2;
-      return isHorizontalRtl ? documentWidth - centerFromLeft : centerFromLeft;
+      // console.log("centerFromLeft", centerFromLeft);
+      return isHorizontalRtl
+        ? scrollContainerWidth - centerFromLeft
+        : centerFromLeft;
     }
   }
 };
@@ -104,8 +131,9 @@ const useCarouselNew = ({
       );
       const center = scrollContainer.clientWidth / 2;
       const focalPoints = mediaItems.map((mediaItem) =>
-        getDistanceToFocalPoint(mediaItem, "center")
+        getDistanceToFocalPoint(scrollContainer, mediaItem, "center")
       );
+      // console.log("focalPoints", focalPoints);
       const closestFocalPoint = focalPoints.reduce((prev, curr) =>
         Math.abs(curr - center) < Math.abs(prev - center) ? curr : prev
       );
@@ -154,7 +182,8 @@ const useCarouselNew = ({
     };
   }, [slidesCount]);
 
-  const navigateToNextItem = throttle((direction: "start" | "end") => {
+  const navigateToNextItem = (direction: "start" | "end") => {
+    const threshold = 0.8;
     const scrollContainer = scrollContainerRef.current;
     if (!scrollContainer) return;
 
@@ -167,9 +196,14 @@ const useCarouselNew = ({
     // the scroll container's center in the direction of travel.
     const scrollContainerCenter = getDistanceToFocalPoint(
       scrollContainer,
+      scrollContainer,
       "center"
     );
     let targetFocalPoint;
+
+    const nextItem = mediaItems[focalPointImage.index].nextElementSibling;
+    const previousItem =
+      mediaItems[focalPointImage.index].previousElementSibling;
 
     for (const mediaItem of mediaItems) {
       let focalPoint = window.getComputedStyle(mediaItem).scrollSnapAlign;
@@ -177,8 +211,57 @@ const useCarouselNew = ({
         focalPoint = "center";
       }
 
-      const distanceToItem = getDistanceToFocalPoint(mediaItem, focalPoint);
+      const distanceToNextItem = nextItem
+        ? getDistanceToFocalPoint(
+            scrollContainer,
+            nextItem as HTMLElement,
+            focalPoint
+          )
+        : undefined;
+      const distanceToPreviousItem = previousItem
+        ? getDistanceToFocalPoint(
+            scrollContainer,
+            previousItem as HTMLElement,
+            focalPoint
+          )
+        : undefined;
+      // const indexOfItem = mediaItems.indexOf(mediaItem);
+      const visiblePercentage =
+        nextItem || previousItem
+          ? calculateVisiblePercentage(
+              direction === "end" ? nextItem : previousItem,
+              scrollContainer
+            )
+          : 0;
+
+      const shouldNavigateToNextItem =
+        direction === "end" &&
+        visiblePercentage > threshold &&
+        !!distanceToNextItem;
+
+      const shouldNavigateToPreviousItem =
+        direction === "start" &&
+        visiblePercentage > threshold &&
+        !!distanceToPreviousItem;
+
+      // console.log("shouldNavigateToNextItem", shouldNavigateToNextItem);
+      // console.log("shouldNavigateToPreviousItem", shouldNavigateToPreviousItem);
+
+      if (shouldNavigateToPreviousItem || shouldNavigateToNextItem) {
+        targetFocalPoint =
+          direction === "end" ? distanceToNextItem : distanceToPreviousItem;
+        break;
+      }
+
+      const distanceToItem = getDistanceToFocalPoint(
+        scrollContainer,
+        mediaItem,
+        focalPoint
+      );
+
       if (
+        shouldNavigateToNextItem ||
+        shouldNavigateToPreviousItem ||
         (direction === "start" && distanceToItem + 1 < scrollContainerCenter) ||
         (direction === "end" && distanceToItem - scrollContainerCenter > 1)
       ) {
@@ -200,22 +283,21 @@ const useCarouselNew = ({
     const newTargetIndex = newMediaItems.findIndex(
       (mediaItem) =>
         Math.abs(
-          getDistanceToFocalPoint(mediaItem, "center") - targetFocalPoint
+          getDistanceToFocalPoint(scrollContainer, mediaItem, "center") -
+            targetFocalPoint
         ) < 1
     );
     if (newTargetIndex !== -1) {
       setCurrentIndex(newTargetIndex);
     }
-  }, 200);
+  };
 
-  if(carouselPosition.isScrollingTowardsEnd && focalPointImage.isCloserToEnd) {
-    console.log(`Shoould navigate to next item`);
-  }
   // console.log("currentIndex", currentIndex);
   return {
+    focalPointImage,
     scrollContainerRef,
     currentIndex,
-    navigateToNextItem,
+    navigateToNextItem: throttle(navigateToNextItem, 200),
     carouselPosition,
   };
 };

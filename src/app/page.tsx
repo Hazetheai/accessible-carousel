@@ -3,7 +3,7 @@ import styles from "./page.module.css";
 import { useEffect, useState } from "react";
 import "./carousel.scss";
 import { useCarousel } from "./useCarousel";
-import useCarouselNew from "./useCarouselNew";
+import { useCarouselNew } from "./useCarouselNew";
 const SLIDES_COUNT = 5;
 const imageUrls = [
   "TCpfPxKPOvk",
@@ -32,10 +32,16 @@ export default function Home() {
     document.documentElement.classList.add("js");
   }, []);
   const [isSlideShow, setIsSlideShow] = useState(false);
-  const { currentIndex, navigateToNextItem, scrollContainerRef, edges } =
-    useCarouselNew({
-      slidesCount: SLIDES_COUNT,
-    });
+  const {
+    currentIndex,
+    focalPointImage,
+    navigateToNextItem,
+    scrollContainerRef,
+    carouselPosition,
+  } = useCarouselNew({
+    slidesCount: SLIDES_COUNT,
+  });
+  // console.log("carouselPosition", carouselPosition);
 
   return (
     <main className={styles.main}>
@@ -59,6 +65,7 @@ export default function Home() {
           // OR
           // aria-describedby="carouselDescription"
         >
+          <div className="center-point"></div>
           <div className="carousel-items">
             {/* Generate an array of images to display using the unsplash api  */}
             {Array.from(Array(SLIDES_COUNT).keys()).map((key, index, arr) => {
@@ -69,10 +76,13 @@ export default function Home() {
                   key={key}
                   role="group"
                   aria-labelledby={`carousel-item-${index + 1}-heading`}
-                  className="carousel-slide"
+                  className={`carousel-slide ${
+                    focalPointImage.index === index ? "focal-image" : ""
+                  } `}
                   id={`carousel-item-${index + 1}`}
                   aria-roledescription="Slide"
                 >
+                  <div className="center-point"></div>
                   <figure className="carousel-item-wrapper">
                     <figcaption id={`carousel-item-${index + 1}-heading`}>
                       Product {index + 1} Title
@@ -120,7 +130,7 @@ export default function Home() {
         >
           <div>
             <button
-              aria-disabled={edges.start}
+              aria-disabled={carouselPosition.start}
               className="carousel-control"
               aria-label="Previous"
               data-direction="start"
@@ -142,7 +152,7 @@ export default function Home() {
           </div>
           <div>
             <button
-              aria-disabled={edges.end}
+              aria-disabled={carouselPosition.end}
               className="carousel-control"
               aria-label="Next"
               data-direction="end"

@@ -19,15 +19,26 @@
     &.with-js {
         scroll-snap-type: none;
     }
+
+    & .center-point {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 1px;
+        height: 100%;
+        background-color: green;
+        z-index: 99;
+    }
 }
 
 .carousel-items {
     /* Arrange media horizontally */
     display: flex;
-    gap: 1rem;
+    // gap: 1rem;
 }
 
 .carousel-slide {
+    position: relative;
     /* Limit the height of each media item */
     height: 300px;
     /* Prevent media from shrinking */
@@ -49,6 +60,26 @@
     //     /* Disable scroll snap */
     //     scroll-snap-align: none;
     // }
+    &.focal-image::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: hsla(0, 100%, 50%, 0.25);
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+    & .center-point {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 1px;
+        height: 100%;
+        background-color: blue;
+        z-index: 99;
+    }
     /* Target direct descendant too in case the images have a wrapper parent */
     & figure,
     & .carousel-item-wrapper,
