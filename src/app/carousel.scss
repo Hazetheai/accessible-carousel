@@ -20,18 +20,24 @@
         scroll-snap-type: none;
     }
 
-    & .center-point {
+    .overlays-active & .center-point {
         position: absolute;
         top: 0;
-        left: calc(50% * var(--center-point-offset, 1));
         width: 1px;
         height: 100%;
         background-color: red;
         box-shadow: 0 0 2px 0px red;
         z-index: 99;
+
+        &.focal-point-start {
+            left: calc(50% * var(--center-point-offset, 1));
+        }
+        &.focal-point-end {
+            right: calc(50% * var(--center-point-offset, 1));
+        }
     }
 
-    &::before {
+    .overlays-active &::before {
         content: "";
         position: absolute;
         top: 0;
@@ -46,7 +52,7 @@
         background-color: hsla(244, 100%, 50%, 0.25);
         pointer-events: none;
     }
-    &::after {
+    .overlays-active &::after {
         content: "";
         position: absolute;
         top: 0;
@@ -92,7 +98,7 @@
     //     /* Disable scroll snap */
     //     scroll-snap-align: none;
     // }
-    &.focal-image::after {
+    .overlays-active &.focal-image::after {
         content: "";
         position: absolute;
         top: 0;
@@ -103,7 +109,7 @@
         height: 100%;
         pointer-events: none;
     }
-    & .center-point {
+    .overlays-active & .center-point {
         position: absolute;
         top: 0;
         left: 50%;

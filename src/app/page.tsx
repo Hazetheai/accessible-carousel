@@ -32,9 +32,10 @@ export default function Home() {
     document.documentElement.classList.add("js");
   }, []);
   const [isSlideShow, setIsSlideShow] = useState(false);
-  const [focalPointOffset, setfocalPointOffset] = useState(0);
-  const [skipAheadThreshold, setSkipAheadThreshold] = useState(0.8);
-  console.log("skipAheadThreshold", skipAheadThreshold);
+  const [focalPointOffset, setfocalPointOffset] = useState(0.1);
+  const [skipAheadThreshold, setSkipAheadThreshold] = useState(0.7);
+  const [toggleOverlays, setToggleOverlays] = useState(true);
+  // console.log("skipAheadThreshold", skipAheadThreshold);
   const {
     focalImageIndex,
     // focalPointImage,
@@ -55,42 +56,54 @@ export default function Home() {
       <a href="#next-section" className="skip-link">
         Skip to next section
       </a>
-      <button onClick={() => setIsSlideShow(!isSlideShow)}>
+      {/* <button onClick={() => setIsSlideShow(!isSlideShow)}>
         Toggle Slideshow {isSlideShow ? "Off" : "On"}
+      </button> */}
+      <button onClick={() => setToggleOverlays(!toggleOverlays)}>
+        Toggle Overlays {toggleOverlays ? "Off" : "On"}
       </button>
-      <p>Current Focal Image Index {focalImageIndex}</p>
-      <div>
-        <label htmlFor="focal-point-offset">Focal Point Offset:</label>
-        <input
-          type="range"
-          id="focal-point-offset"
-          name="focal-point-offset"
-          min="-0.5"
-          max=".5"
-          step="0.01"
-          value={focalPointOffset}
-          onChange={(e) => setfocalPointOffset(parseFloat(e.target.value))}
-        />{" "}
-        {/* {focalPointOffset} */}
-      </div>
-      <div>
-        <label htmlFor="focal-point-skipAheadThreshold">
-          Skip Ahead Threshold:
-        </label>
-        <input
-          type="range"
-          id="focal-point-skipAheadThreshold"
-          name="focal-point-skipAheadThreshold"
-          min="0.01"
-          max="0.99"
-          step="0.01"
-          value={skipAheadThreshold}
-          onChange={(e) => setSkipAheadThreshold(parseFloat(e.target.value))}
-        />{" "}
-        {/* {skipAheadThreshold} */}
-      </div>
-
-      <section className={`carousel ${isSlideShow ? "slideshow" : ""}`}>
+      {toggleOverlays && (
+        <div>
+          <p>Current Focal Image Index {focalImageIndex}</p>
+          <div>
+            <label htmlFor="focal-point-offset">Focal Point Offset:</label>
+            <input
+              type="range"
+              id="focal-point-offset"
+              name="focal-point-offset"
+              min="0"
+              max=".5"
+              step="0.01"
+              value={focalPointOffset}
+              onChange={(e) => setfocalPointOffset(parseFloat(e.target.value))}
+            />{" "}
+            {/* {focalPointOffset} */}
+          </div>
+          <div>
+            <label htmlFor="focal-point-skipAheadThreshold">
+              Skip Ahead Threshold:
+            </label>
+            <input
+              type="range"
+              id="focal-point-skipAheadThreshold"
+              name="focal-point-skipAheadThreshold"
+              min="0.01"
+              max="0.99"
+              step="0.01"
+              value={skipAheadThreshold}
+              onChange={(e) =>
+                setSkipAheadThreshold(parseFloat(e.target.value))
+              }
+            />{" "}
+            {/* {skipAheadThreshold} */}
+          </div>
+        </div>
+      )}
+      <section
+        className={`carousel ${isSlideShow ? "slideshow" : ""} ${
+          toggleOverlays ? "overlays-active" : ""
+        } `}
+      >
         <div
           style={{
             // @ts-ignore
@@ -108,7 +121,8 @@ export default function Home() {
           // OR
           // aria-describedby="carouselDescription"
         >
-          <div className="center-point"></div>
+          <div className="center-point focal-point-start"></div>
+          <div className="center-point focal-point-end"></div>
           <div className="carousel-items">
             {/* Generate an array of images to display using the unsplash api  */}
             {Array.from(Array(SLIDES_COUNT).keys()).map((key, index, arr) => {
