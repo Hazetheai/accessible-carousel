@@ -33,15 +33,19 @@ export default function Home() {
   }, []);
   const [isSlideShow, setIsSlideShow] = useState(false);
   const [focalPointOffset, setfocalPointOffset] = useState(0);
+  const [skipAheadThreshold, setSkipAheadThreshold] = useState(0.8);
+  console.log("skipAheadThreshold", skipAheadThreshold);
   const {
-    currentIndex,
-    focalPointImage,
+    focalImageIndex,
+    // focalPointImage,
     navigateToNextItem,
     scrollContainerRef,
-    carouselPosition,
+    // carouselPosition,
   } = useCarouselNew({
     slidesCount: SLIDES_COUNT,
     focalPointOffset,
+    skipAheadThreshold,
+    initialIndex: 0,
   });
 
   // console.log("carouselPosition", carouselPosition);
@@ -54,6 +58,7 @@ export default function Home() {
       <button onClick={() => setIsSlideShow(!isSlideShow)}>
         Toggle Slideshow {isSlideShow ? "Off" : "On"}
       </button>
+      <p>Current Focal Image Index {focalImageIndex}</p>
       <div>
         <label htmlFor="focal-point-offset">Focal Point Offset:</label>
         <input
@@ -65,12 +70,33 @@ export default function Home() {
           step="0.01"
           value={focalPointOffset}
           onChange={(e) => setfocalPointOffset(parseFloat(e.target.value))}
-        />
+        />{" "}
+        {/* {focalPointOffset} */}
+      </div>
+      <div>
+        <label htmlFor="focal-point-skipAheadThreshold">
+          Skip Ahead Threshold:
+        </label>
+        <input
+          type="range"
+          id="focal-point-skipAheadThreshold"
+          name="focal-point-skipAheadThreshold"
+          min="0.01"
+          max="0.99"
+          step="0.01"
+          value={skipAheadThreshold}
+          onChange={(e) => setSkipAheadThreshold(parseFloat(e.target.value))}
+        />{" "}
+        {/* {skipAheadThreshold} */}
       </div>
 
       <section className={`carousel ${isSlideShow ? "slideshow" : ""}`}>
         <div
-          style={{ "--center-point-offset": `${1 + focalPointOffset * 2}` }}
+          style={{
+            // @ts-ignore
+            "--center-point-offset": `${(1 + focalPointOffset * 2).toFixed(2)}`,
+            "--skip-ahead-threshold": `${skipAheadThreshold.toFixed(2)}`,
+          }}
           tabIndex={0}
           className={`carousel-scroll-container ${
             !!navigateToNextItem ? "with-js" : ""
@@ -94,7 +120,7 @@ export default function Home() {
                   role="group"
                   aria-labelledby={`carousel-item-${index + 1}-heading`}
                   className={`carousel-slide ${
-                    focalPointImage.index === index ? "focal-image" : ""
+                    focalImageIndex === index ? "focal-image" : ""
                   } `}
                   id={`carousel-item-${index + 1}`}
                   aria-roledescription="Slide"
@@ -147,7 +173,7 @@ export default function Home() {
         >
           <div>
             <button
-              aria-disabled={carouselPosition.start}
+              aria-disabled={focalImageIndex === 0}
               className="carousel-control"
               aria-label="Previous"
               data-direction="start"
@@ -169,7 +195,7 @@ export default function Home() {
           </div>
           <div>
             <button
-              aria-disabled={carouselPosition.end}
+              aria-disabled={focalImageIndex === SLIDES_COUNT - 1}
               className="carousel-control"
               aria-label="Next"
               data-direction="end"

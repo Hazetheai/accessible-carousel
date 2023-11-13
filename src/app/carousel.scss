@@ -23,19 +23,50 @@
     & .center-point {
         position: absolute;
         top: 0;
-
         left: calc(50% * var(--center-point-offset, 1));
         width: 1px;
         height: 100%;
-        background-color: green;
+        background-color: red;
+        box-shadow: 0 0 2px 0px red;
         z-index: 99;
+    }
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: calc(var(--skip-ahead-threshold, 1) * 50%);
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        z-index: 1;
+        background-color: hsla(244, 100%, 50%, 0.25);
+        pointer-events: none;
+    }
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: calc(var(--skip-ahead-threshold, 1) * 50%);
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        z-index: 1;
+        background-color: hsla(244, 100%, 50%, 0.25);
+        pointer-events: none;
     }
 }
 
 .carousel-items {
     /* Arrange media horizontally */
     display: flex;
-    // gap: 1rem;
+    gap: 2rem;
 }
 
 .carousel-slide {
