@@ -73,8 +73,7 @@ const getDistanceToFocalPoint = ({
   const offset = focalPointOffset * scrollContainer.clientWidth;
   const offsetLeft = offset + scrollContainerRect.left;
   const offsetRight = offset + scrollContainerRect.right;
-  // console.log("offset", offset);
-  // console.log("offsetLeft", offsetLeft);
+
   const isHorizontalRtl = isRtl(element);
   const scrollContainerWidth = scrollContainer.clientWidth;
   const rect = element.getBoundingClientRect();
@@ -187,7 +186,8 @@ const useCarouselNew = ({
 
   useEffect(() => {
     scrollToIndex(initialIndex);
-  }, [initialIndex, scrollToIndex]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const navigateToNextItem = (direction: "start" | "end") => {
     const scrollContainer = scrollContainerRef.current;

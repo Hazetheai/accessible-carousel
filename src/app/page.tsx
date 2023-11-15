@@ -7,27 +7,67 @@ import { useCarouselNew } from "./useCarouselNew";
 
 const slidesData = _slidesData.filter((slide) => slide.type !== "video");
 
+const findFirstFocusableElement = (container: Element | undefined) => {
+  return container
+    ? Array.from(container.getElementsByTagName("*")).find(isFocusable)
+    : null;
+};
+
+const isFocusable = (element: Element) => {
+  const focusableElements = [
+    "a[href]",
+    "button:not([disabled])",
+    "input:not([disabled])",
+    "select:not([disabled])",
+    "textarea:not([disabled])",
+    "[tabindex]:not([tabindex='-1'])",
+    "video",
+    "[contenteditable]",
+  ];
+  return focusableElements.some((selector) => element.matches(selector));
+};
+
 export default function Home() {
-  // remove no-js class on load
-  useEffect(() => {
-    document.documentElement.classList.remove("no-js");
-    document.documentElement.classList.add("js");
-  }, []);
-  const [isSlideShow, setIsSlideShow] = useState(false);
+  //  Used for illustrative purposes
   const [focalPointOffset, setfocalPointOffset] = useState(0.05);
   const [skipAheadThreshold, setSkipAheadThreshold] = useState(0.7);
-  const [toggleOverlays, setToggleOverlays] = useState(true);
+  const [toggleOverlays, setToggleOverlays] = useState(false);
   const [toggleSlideButton, setToggleSlideButton] = useState(false);
+  //
+  const [isTouched, setIsTouched] = useState(false);
 
   const { focalImageIndex, navigateToNextItem, scrollContainerRef } =
     useCarouselNew({
       slidesCount: slidesData.length,
       focalPointOffset,
       skipAheadThreshold,
-      initialIndex: 2,
+      initialIndex: 0,
     });
 
-  // console.log("carouselPosition", carouselPosition);
+  const slideRefs = useRef<HTMLDivElement[]>([]);
+
+  // remove no-js class on load
+  useEffect(() => {
+    document.documentElement.classList.remove("no-js");
+    document.documentElement.classList.add("js");
+  }, []);
+
+  useEffect(() => {
+    const firstFocusableInput = findFirstFocusableElement(
+      slideRefs?.current[focalImageIndex]
+    );
+    if (
+      focalImageIndex !== null &&
+      slideRefs.current[focalImageIndex] &&
+      firstFocusableInput
+    ) {
+      (firstFocusableInput as HTMLElement).focus();
+    } else {
+      isTouched && scrollContainerRef.current?.focus();
+    }
+  }, [focalImageIndex, scrollContainerRef, isTouched]);
+
+  // Used for illustrative purposes
   const widthOfPreviousSlide =
     scrollContainerRef.current?.querySelectorAll(".carousel-slide")[
       focalImageIndex - 1
@@ -43,9 +83,6 @@ export default function Home() {
       <a href="#next-section" className="skip-link">
         Skip to next section
       </a>
-      {/* <button onClick={() => setIsSlideShow(!isSlideShow)}>
-        Toggle Slideshow {isSlideShow ? "Off" : "On"}
-      </button> */}
       <button onClick={() => setToggleOverlays(!toggleOverlays)}>
         Toggle Overlays {toggleOverlays ? "Off" : "On"}
       </button>
@@ -85,9 +122,7 @@ export default function Home() {
         </div>
       )}
       <section
-        className={`carousel ${isSlideShow ? "slideshow" : ""} ${
-          toggleOverlays ? "overlays-active" : ""
-        } `}
+        className={`carousel ${toggleOverlays ? "overlays-active" : ""} `}
       >
         <div
           style={{
@@ -98,18 +133,18 @@ export default function Home() {
             "--width-of-next-slide": `${widthOfNextSlide}px`,
           }}
           tabIndex={0}
+          onFocus={() => {
+            setIsTouched(true);
+          }}
           //  Add event listeners for keyboard navigation
           onKeyUp={(e) => {
             if (e.key === "ArrowLeft") {
               navigateToNextItem("start");
-              // e.stopPropagation();
               e.preventDefault();
             }
             if (e.key === "ArrowRight") {
               navigateToNextItem("end");
-              // e.stopPropagation();
               e.preventDefault();
-              console.log(`navigateToNextItem("end")`);
             }
           }}
           className={`carousel-scroll-container ${
@@ -126,6 +161,9 @@ export default function Home() {
             {slidesData.map((slide, index, arr) => {
               return (
                 <div
+                  ref={(el) => {
+                    slideRefs.current[index] = el as HTMLDivElement;
+                  }}
                   data-slide-number={index + 1}
                   key={slide._id}
                   role="group"
@@ -135,13 +173,11 @@ export default function Home() {
                   } ${slide.type}-slide `}
                   id={`carousel-item-${index + 1}`}
                   aria-roledescription="Slide"
-                  onFocus={() => {
-                    console.log("focused", slide.title);
-                  }}
+                  tabIndex={-1}
                 >
                   <figure className="carousel-item-wrapper">
                     <figcaption id={`carousel-item-${index + 1}-heading`}>
-                      {slide.title}
+                      {slide.title || `Slide ${index + 1} of ${arr.length}`}
                     </figcaption>
                     {["image", "product"].includes(slide.type) ? (
                       <SlideImage
@@ -152,26 +188,19 @@ export default function Home() {
                       />
                     ) : slide.type === "video" ? (
                       <SlideVideo
-                        title={slide.title}
                         videoURL={slide.src}
-                        altText={slide.title}
-                        isFocalImage={focalImageIndex === index}
-                        index={index}
                         fileType={slide.fileType || ""}
                       />
                     ) : slide.type === "interactive" ? (
                       <InterActiveSlideWithButtons
                         title={slide.title}
                         isToggled={toggleSlideButton}
-                        index={index}
                         isFocalImage={focalImageIndex === index}
                         fn={() => {
                           setToggleSlideButton(!toggleSlideButton);
                         }}
                       />
-                    ) : (
-                      "BEANS"
-                    )}
+                    ) : null}
                   </figure>
                 </div>
               );
@@ -240,7 +269,6 @@ export default function Home() {
 const SlideImage = ({
   imgURL,
   altText,
-  isFocalImage,
   index,
 }: {
   imgURL: string;
@@ -284,35 +312,14 @@ https://source.unsplash.com/${imgURL}/1920x1080 3x
 
 const SlideVideo = ({
   videoURL,
-  altText,
-  isFocalImage,
-  index,
   fileType,
-  title,
 }: {
   videoURL: string;
-  altText: string;
-  isFocalImage: boolean;
-  index: number;
   fileType: string;
-  title: string;
 }) => {
-  const slideRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (isFocalImage && slideRef.current) {
-      slideRef.current.focus();
-    }
-  }, [isFocalImage]);
-
   return (
     <div className="video-container">
-      <video
-        controls
-        aria-label="Video 1"
-        tabIndex={isFocalImage ? 0 : -1}
-        poster="video-poster.jpg"
-      >
+      <video controls aria-label="Video 1" poster="video-poster.jpg">
         {/* Add your video source and other attributes here */}
         {fileType === "webm" && <source src={videoURL} type="video/webm" />}
         {fileType === "mp4" && <source src={videoURL} type="video/mp4" />}
@@ -344,34 +351,21 @@ const SlideVideo = ({
 
 const InterActiveSlideWithButtons = ({
   fn,
-  index,
   isFocalImage,
   title,
   isToggled,
 }: {
   fn: () => void;
-  index: number;
   isFocalImage: boolean;
   title: string;
   isToggled: boolean;
 }) => {
-  const buttonRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (isFocalImage && buttonRef.current) {
-      buttonRef.current.focus();
-    } else {
-      buttonRef.current?.blur();
-    }
-  }, [isFocalImage]);
-
   return (
-    <div className={``}>
+    <div>
       <h3>{title}</h3>
-
       {/* Using a negative tabindex ensures that these elements 
       are not focusable until the user interacts with the carousel.  */}
-      <button ref={buttonRef} tabIndex={isFocalImage ? 0 : -1} onClick={fn}>
+      <button tabIndex={isFocalImage ? 0 : -1} onClick={fn}>
         Click Me
       </button>
       <div className="interactive-slide__output">
