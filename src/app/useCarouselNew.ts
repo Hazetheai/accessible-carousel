@@ -167,6 +167,28 @@ const useCarouselNew = ({
     };
   }, [handleCarouselScroll]);
 
+  const scrollToIndex = useCallback((index: number) => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return;
+    const mediaItems = Array.from(
+      scrollContainer.querySelectorAll(".carousel-slide")
+    );
+    const targetItem = mediaItems[index];
+    if (!targetItem) return;
+    const targetFocalPoint = getDistanceToFocalPoint({
+      focalPointOffset: 0,
+      scrollContainer,
+      element: targetItem,
+      focalPoint: "center",
+    });
+    const scrollAmount = targetFocalPoint - scrollContainer.clientWidth / 2;
+    scrollContainer.scrollBy({ left: scrollAmount });
+  }, []);
+
+  useEffect(() => {
+    scrollToIndex(initialIndex);
+  }, [initialIndex, scrollToIndex]);
+
   const navigateToNextItem = (direction: "start" | "end") => {
     const scrollContainer = scrollContainerRef.current;
     if (!scrollContainer) return;

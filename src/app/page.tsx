@@ -24,7 +24,7 @@ export default function Home() {
       slidesCount: slidesData.length,
       focalPointOffset,
       skipAheadThreshold,
-      initialIndex: 0,
+      initialIndex: 2,
     });
 
   // console.log("carouselPosition", carouselPosition);
