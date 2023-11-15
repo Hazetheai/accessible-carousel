@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import "./carousel.scss";
-import styles from "./page.module.css";
 import _slidesData from "./slides-data.json";
 import { useCarouselNew } from "./useCarouselNew";
 
@@ -36,13 +35,12 @@ export default function Home() {
   //
   const [isTouched, setIsTouched] = useState(false);
 
-  const { focalImageIndex, navigateToNextItem, scrollContainerRef } =
-    useCarouselNew({
-      slidesCount: slidesData.length,
-      focalPointOffset,
-      skipAheadThreshold,
-      initialIndex: 0,
-    });
+  const { focalSlideIndex, changeSlide, scrollContainerRef } = useCarouselNew({
+    slidesCount: slidesData.length,
+    focalPointOffset,
+    skipAheadThreshold,
+    initialIndex: 0,
+  });
 
   const slideRefs = useRef<HTMLDivElement[]>([]);
 
@@ -54,32 +52,32 @@ export default function Home() {
 
   useEffect(() => {
     const firstFocusableInput = findFirstFocusableElement(
-      slideRefs?.current[focalImageIndex]
+      slideRefs?.current[focalSlideIndex]
     );
     if (
-      focalImageIndex !== null &&
-      slideRefs.current[focalImageIndex] &&
+      focalSlideIndex !== null &&
+      slideRefs.current[focalSlideIndex] &&
       firstFocusableInput
     ) {
       (firstFocusableInput as HTMLElement).focus();
     } else {
       isTouched && scrollContainerRef.current?.focus();
     }
-  }, [focalImageIndex, scrollContainerRef, isTouched]);
+  }, [focalSlideIndex, scrollContainerRef, isTouched]);
 
   // Used for illustrative purposes
   const widthOfPreviousSlide =
     scrollContainerRef.current?.querySelectorAll(".carousel-slide")[
-      focalImageIndex - 1
+      focalSlideIndex - 1
     ]?.clientWidth || 0;
 
   const widthOfNextSlide =
     scrollContainerRef.current?.querySelectorAll(".carousel-slide")[
-      focalImageIndex + 1
+      focalSlideIndex + 1
     ]?.clientWidth || 0;
 
   return (
-    <main className={styles.main}>
+    <main>
       <a href="#next-section" className="skip-link">
         Skip to next section
       </a>
@@ -88,7 +86,7 @@ export default function Home() {
       </button>
       {toggleOverlays && (
         <div>
-          <p>Current Focal Image Index {focalImageIndex}</p>
+          <p>Current Focal Image Index {focalSlideIndex}</p>
           <div>
             <label htmlFor="focal-point-offset">Focal Point Offset:</label>
             <input
@@ -139,16 +137,16 @@ export default function Home() {
           //  Add event listeners for keyboard navigation
           onKeyUp={(e) => {
             if (e.key === "ArrowLeft") {
-              navigateToNextItem("start");
+              changeSlide("start");
               e.preventDefault();
             }
             if (e.key === "ArrowRight") {
-              navigateToNextItem("end");
+              changeSlide("end");
               e.preventDefault();
             }
           }}
           className={`carousel-scroll-container ${
-            !!navigateToNextItem ? "with-js" : ""
+            !!changeSlide ? "with-js" : ""
           }`}
           role="region"
           aria-roledescription="carousel"
@@ -169,7 +167,7 @@ export default function Home() {
                   role="group"
                   aria-labelledby={`carousel-item-${index + 1}-heading`}
                   className={`carousel-slide ${
-                    focalImageIndex === index ? "focal-image" : ""
+                    focalSlideIndex === index ? "focal-image" : ""
                   } ${slide.type}-slide `}
                   id={`carousel-item-${index + 1}`}
                   aria-roledescription="Slide"
@@ -183,7 +181,7 @@ export default function Home() {
                       <SlideImage
                         imgURL={slide.src}
                         altText={slide.title}
-                        isFocalImage={focalImageIndex === index}
+                        isfocalSlide={focalSlideIndex === index}
                         index={index}
                       />
                     ) : slide.type === "video" ? (
@@ -195,7 +193,7 @@ export default function Home() {
                       <InterActiveSlideWithButtons
                         title={slide.title}
                         isToggled={toggleSlideButton}
-                        isFocalImage={focalImageIndex === index}
+                        isfocalSlide={focalSlideIndex === index}
                         fn={() => {
                           setToggleSlideButton(!toggleSlideButton);
                         }}
@@ -214,13 +212,13 @@ export default function Home() {
         >
           <div>
             <button
-              aria-disabled={focalImageIndex === 0}
-              tabIndex={focalImageIndex === 0 ? -1 : 0}
+              aria-disabled={focalSlideIndex === 0}
+              tabIndex={focalSlideIndex === 0 ? -1 : 0}
               className="carousel-control"
               aria-label="Previous"
               data-direction="start"
               onClick={(e) => {
-                navigateToNextItem("start");
+                changeSlide("start");
               }}
             >
               <svg
@@ -237,13 +235,13 @@ export default function Home() {
           </div>
           <div>
             <button
-              aria-disabled={focalImageIndex === slidesData.length - 1}
-              tabIndex={focalImageIndex === slidesData.length - 1 ? -1 : 0}
+              aria-disabled={focalSlideIndex === slidesData.length - 1}
+              tabIndex={focalSlideIndex === slidesData.length - 1 ? -1 : 0}
               className="carousel-control"
               aria-label="Next"
               data-direction="end"
               onClick={(e) => {
-                navigateToNextItem("end");
+                changeSlide("end");
               }}
             >
               <svg
@@ -273,7 +271,7 @@ const SlideImage = ({
 }: {
   imgURL: string;
   altText: string;
-  isFocalImage: boolean;
+  isfocalSlide: boolean;
   index: number;
 }) => {
   return (
@@ -351,12 +349,12 @@ const SlideVideo = ({
 
 const InterActiveSlideWithButtons = ({
   fn,
-  isFocalImage,
+  isfocalSlide,
   title,
   isToggled,
 }: {
   fn: () => void;
-  isFocalImage: boolean;
+  isfocalSlide: boolean;
   title: string;
   isToggled: boolean;
 }) => {
@@ -365,7 +363,7 @@ const InterActiveSlideWithButtons = ({
       <h3>{title}</h3>
       {/* Using a negative tabindex ensures that these elements 
       are not focusable until the user interacts with the carousel.  */}
-      <button tabIndex={isFocalImage ? 0 : -1} onClick={fn}>
+      <button tabIndex={isfocalSlide ? 0 : -1} onClick={fn}>
         Click Me
       </button>
       <div className="interactive-slide__output">

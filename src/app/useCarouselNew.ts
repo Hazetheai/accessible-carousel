@@ -107,7 +107,7 @@ const useCarouselNew = ({
   focalPointOffset?: number;
   skipAheadThreshold?: number;
 }) => {
-  const [focalImageIndex, setFocalImageIndex] = useState(initialIndex);
+  const [focalSlideIndex, setfocalSlideIndex] = useState(initialIndex);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const prevScrollLeft = useRef(0);
@@ -147,7 +147,7 @@ const useCarouselNew = ({
     );
     const closestFocalPointIndex = focalPoints.indexOf(closestFocalPoint);
 
-    setFocalImageIndex(
+    setfocalSlideIndex(
       // isAtEnd ? slidesCount - 1 : isAtStart ? 0 : closestFocalPointIndex
       closestFocalPointIndex
     );
@@ -189,7 +189,7 @@ const useCarouselNew = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const navigateToNextItem = (direction: "start" | "end") => {
+  const changeSlide = (direction: "start" | "end") => {
     const scrollContainer = scrollContainerRef.current;
     if (!scrollContainer) return;
 
@@ -208,16 +208,16 @@ const useCarouselNew = ({
 
     // This will move the focal image to the on in the direction of travel,
     // potentially moving "2" slides at once
-    let focalImageIndexOverride;
+    let focalSlideIndexOverride;
     // const { isScrollingTowardsEnd, isScrollingTowardsStart } =
     //   detectScrollDirection(scrollContainer?.scrollLeft, prevScrollLeft);
     // if (isScrollingTowardsEnd && direction === "start") {
-    //   focalImageIndexOverride = Math.max(focalImageIndex - 1, 0);
+    //   focalSlideIndexOverride = Math.max(focalSlideIndex - 1, 0);
     // }
     // if (isScrollingTowardsStart && direction === "end") {
-    //   focalImageIndexOverride = Math.min(focalImageIndex + 1, slidesCount - 1);
+    //   focalSlideIndexOverride = Math.min(focalSlideIndex + 1, slidesCount - 1);
     // }
-    const focalIndex = focalImageIndexOverride ?? focalImageIndex;
+    const focalIndex = focalSlideIndexOverride ?? focalSlideIndex;
 
     // Basic idea: Find the first item whose focal point is past
     // the scroll container's center in the direction of travel.
@@ -262,12 +262,12 @@ const useCarouselNew = ({
       // Edge case: Focal image may be mostly visible, so move to the next image,
       // instead of centering the focal image, which can be frustrating and a bad UX
 
-      const isFocalImage =
+      const isfocalSlide =
         (direction === "start" ? reversedMediaItems : mediaItems).indexOf(
           mediaItem
         ) === focalIndex;
 
-      if (isFocalImage && isNotStartOrEnd) {
+      if (isfocalSlide && isNotStartOrEnd) {
         const visiblePercentage = calculateVisiblePercentage(
           mediaItem,
           scrollContainer
@@ -324,8 +324,8 @@ const useCarouselNew = ({
 
   return {
     scrollContainerRef,
-    focalImageIndex,
-    navigateToNextItem: throttle(navigateToNextItem),
+    focalSlideIndex,
+    changeSlide: throttle(changeSlide),
   };
 };
 
