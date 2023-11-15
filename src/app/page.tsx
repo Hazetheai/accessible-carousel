@@ -1,9 +1,11 @@
 "use client";
 import styles from "./page.module.css";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./carousel.scss";
 import { useCarousel } from "./useCarousel";
 import { useCarouselNew } from "./useCarouselNew";
+import slidesData from "./slides-data.json";
+import { type } from "os";
 const SLIDES_COUNT = 5;
 const imageUrls = [
   "TCpfPxKPOvk",
@@ -35,6 +37,7 @@ export default function Home() {
   const [focalPointOffset, setfocalPointOffset] = useState(0.1);
   const [skipAheadThreshold, setSkipAheadThreshold] = useState(0.7);
   const [toggleOverlays, setToggleOverlays] = useState(true);
+  const [toggleSlideButton, setToggleSlideButton] = useState(false);
   // console.log("skipAheadThreshold", skipAheadThreshold);
   const {
     focalImageIndex,
@@ -103,10 +106,20 @@ export default function Home() {
         className={`carousel ${isSlideShow ? "slideshow" : ""} ${
           toggleOverlays ? "overlays-active" : ""
         } `}
+        //  Add event listeners for keyboard navigation
+
+        onKeyUp={(e) => {
+          if (e.key === "ArrowLeft") {
+            navigateToNextItem("start");
+          }
+          if (e.key === "ArrowRight") {
+            navigateToNextItem("end");
+          }
+        }}
       >
         <div
           style={{
-            // @ts-ignore
+            // @ts-ignore - used for illustrative purposes
             "--center-point-offset": `${(1 + focalPointOffset * 2).toFixed(2)}`,
             "--skip-ahead-threshold": `${skipAheadThreshold.toFixed(2)}`,
           }}
@@ -124,60 +137,59 @@ export default function Home() {
           <div className="center-point focal-point-start"></div>
           <div className="center-point focal-point-end"></div>
           <div className="carousel-items">
-            {/* Generate an array of images to display using the unsplash api  */}
-            {Array.from(Array(SLIDES_COUNT).keys()).map((key, index, arr) => {
-              const imgURL = imageUrls[wraparound(index, arr.length)];
-              return (
-                <div
-                  data-slide-number={index + 1}
-                  key={key}
-                  role="group"
-                  aria-labelledby={`carousel-item-${index + 1}-heading`}
-                  className={`carousel-slide ${
-                    focalImageIndex === index ? "focal-image" : ""
-                  } `}
-                  id={`carousel-item-${index + 1}`}
-                  aria-roledescription="Slide"
-                >
-                  {/* <div className="center-point"></div> */}
-                  <figure className="carousel-item-wrapper">
-                    <figcaption id={`carousel-item-${index + 1}-heading`}>
-                      Product {index + 1} Title
-                    </figcaption>
-                    <picture>
-                      {/* Largest Size */}
-                      <source
-                        srcSet={`
-                       https://source.unsplash.com/${imgURL}/1920x1080 1x
-                      `}
-                        media="(min-width: 75em)"
-                      />
-                      {/* Medium Size */}
-                      <source
-                        srcSet={`
-                        https://source.unsplash.com/${imgURL}/1024x576 1x,
-                        https://source.unsplash.com/${imgURL}/1920x1080 2x
-                      `}
-                        media="(min-width: 40em)"
-                      />
-                      <img
-                        src={`https://source.unsplash.com/${imgURL}/400x225`}
-                        alt={`Description of Slide ${index + 1}`}
-                        srcSet={`
-                  https://source.unsplash.com/${imgURL}/400x225 1x, 
-                  https://source.unsplash.com/${imgURL}/1024x576 2x,
-                  https://source.unsplash.com/${imgURL}/1920x1080 3x
-                  `}
-                        loading="lazy"
-                        decoding="async"
-                        width={1920}
-                        height={1080}
-                      />
-                    </picture>
-                  </figure>
-                </div>
-              );
-            })}
+            {slidesData
+              .filter((slide) => slide.type === "image")
+              .map((slide, index, arr) => {
+                return (
+                  <div
+                    data-slide-number={index + 1}
+                    key={slide._id}
+                    role="group"
+                    aria-labelledby={`carousel-item-${index + 1}-heading`}
+                    className={`carousel-slide ${
+                      focalImageIndex === index ? "focal-image" : ""
+                    } ${slide.type}-slide `}
+                    id={`carousel-item-${index + 1}`}
+                    aria-roledescription="Slide"
+                  >
+                    <figure className="carousel-item-wrapper">
+                      <figcaption id={`carousel-item-${index + 1}-heading`}>
+                        {slide.title}
+                      </figcaption>
+                      {["image", "product"].includes(slide.type) && (
+                        <SlideImage
+                          imgURL={slide.src}
+                          altText={slide.title}
+                          isFocalImage={focalImageIndex === index}
+                          index={index}
+                        />
+                      )}
+                      {slide.type === "video" && (
+                        <SlideVideo
+                          title={slide.title}
+                          videoURL={slide.src}
+                          altText={slide.title}
+                          isFocalImage={focalImageIndex === index}
+                          index={index}
+                          fileType={slide.fileType || ""}
+                        />
+                      )}
+
+                      {slide.type === "interactive" && (
+                        <InterActiveSlideWithButtons
+                          title={slide.title}
+                          isToggled={toggleSlideButton}
+                          index={index}
+                          isFocalImage={focalImageIndex === index}
+                          fn={() => {
+                            setToggleSlideButton(!toggleSlideButton);
+                          }}
+                        />
+                      )}
+                    </figure>
+                  </div>
+                );
+              })}
           </div>
         </div>
         <div
@@ -188,6 +200,7 @@ export default function Home() {
           <div>
             <button
               aria-disabled={focalImageIndex === 0}
+              tabIndex={focalImageIndex === 0 ? -1 : 0}
               className="carousel-control"
               aria-label="Previous"
               data-direction="start"
@@ -210,6 +223,7 @@ export default function Home() {
           <div>
             <button
               aria-disabled={focalImageIndex === SLIDES_COUNT - 1}
+              tabIndex={focalImageIndex === SLIDES_COUNT - 1 ? -1 : 0}
               className="carousel-control"
               aria-label="Next"
               data-direction="end"
@@ -239,3 +253,165 @@ export default function Home() {
     </main>
   );
 }
+
+const SlideImage = ({
+  imgURL,
+  altText,
+  isFocalImage,
+  index,
+}: {
+  imgURL: string;
+  altText: string;
+  isFocalImage: boolean;
+  index: number;
+}) => {
+  return (
+    <picture>
+      {/* Largest Size */}
+      <source
+        srcSet={`
+     https://source.unsplash.com/${imgURL}/1920x1080 1x
+    `}
+        media="(min-width: 75em)"
+      />
+      {/* Medium Size */}
+      <source
+        srcSet={`
+      https://source.unsplash.com/${imgURL}/1024x576 1x,
+      https://source.unsplash.com/${imgURL}/1920x1080 2x
+    `}
+        media="(min-width: 40em)"
+      />
+      <img
+        src={`https://source.unsplash.com/${imgURL}/400x225`}
+        alt={altText || `Description of Slide ${index + 1}`}
+        srcSet={`
+https://source.unsplash.com/${imgURL}/400x225 1x, 
+https://source.unsplash.com/${imgURL}/1024x576 2x,
+https://source.unsplash.com/${imgURL}/1920x1080 3x
+`}
+        loading="lazy"
+        decoding="async"
+        width={1920}
+        height={1080}
+      />
+    </picture>
+  );
+};
+
+const SlideVideo = ({
+  videoURL,
+  altText,
+  isFocalImage,
+  index,
+  fileType,
+  title,
+}: {
+  videoURL: string;
+  altText: string;
+  isFocalImage: boolean;
+  index: number;
+  fileType: string;
+  title: string;
+}) => {
+  const slideRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isFocalImage && slideRef.current) {
+      slideRef.current.focus();
+    }
+  }, [isFocalImage]);
+
+  return (
+    <div
+      ref={slideRef}
+      role="group"
+      aria-labelledby={`carousel-item-${index}-heading`}
+      className="carousel-slide"
+      // tabIndex={isFocalImage ? 0 : -1}
+    >
+      <div className="carousel-item-wrapper">
+        <h2 id={`carousel-item-${index}-heading`}>{title}</h2>
+        <p>Product Video Description</p>
+        {/* Using a negative tabindex ensures that these elements 
+      are not focusable until the user interacts with the carousel.  */}
+        <div className="video-container">
+          <video
+            controls
+            aria-label="Video 1"
+            tabIndex={isFocalImage ? 0 : -1}
+            poster="video-poster.jpg"
+          >
+            {/* Add your video source and other attributes here */}
+            {fileType === "webm" && <source src={videoURL} type="video/webm" />}
+            {fileType === "mp4" && <source src={videoURL} type="video/mp4" />}
+            {fileType === "ogg" && <source src={videoURL} type="video/ogg" />}
+
+            {/* Closed captions or subtitles for spoken content */}
+            <track
+              label="English"
+              kind="subtitles"
+              srcLang="en"
+              src="vtt/subtitles-en.vtt"
+              default
+            />
+            <track
+              label="Francais"
+              kind="subtitles"
+              srcLang="fr"
+              src="vtt/subtitles-fr.vtt"
+            />
+            <p>
+              Your browser does not support the video tag.
+              <br />
+              <a href="https://tinloof.com/blog">Click here</a> to view source.
+            </p>
+          </video>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const InterActiveSlideWithButtons = ({
+  fn,
+  index,
+  isFocalImage,
+  title,
+  isToggled,
+}: {
+  fn: () => void;
+  index: number;
+  isFocalImage: boolean;
+  title: string;
+  isToggled: boolean;
+}) => {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (isFocalImage && buttonRef.current) {
+      buttonRef.current.focus();
+    }
+  }, [isFocalImage]);
+
+  return (
+    <div
+      role="group"
+      aria-labelledby={`carousel-item-${index}-heading`}
+      className={`carousel-slide`}
+    >
+      <div className={`carousel-item-wrapper`}>
+        <h2 id={`carousel-item-${index}-heading`}>{title}</h2>
+
+        {/* Using a negative tabindex ensures that these elements 
+      are not focusable until the user interacts with the carousel.  */}
+        <button ref={buttonRef} tabIndex={isFocalImage ? 0 : -1} onClick={fn}>
+          Click Me
+        </button>
+        <div className="interactive-slide__output">
+          {isToggled ? "ON" : "OFF"}
+        </div>
+      </div>
+    </div>
+  );
+};

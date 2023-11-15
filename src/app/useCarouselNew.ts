@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, use, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 
 type ThrottleFunction = <T extends unknown[]>(
   fn: (...args: T) => void
@@ -67,7 +67,8 @@ const getDistanceToFocalPoint = ({
   focalPoint = "center",
   focalPointOffset = 0,
 }: GetDistanceToFocalPointParams): number => {
-  //  Calculate the distance from the starting edge of the viewport to edge of the scrollContainer to account for padding, margins other elements etc.
+  // Calculate the distance from the start of the container to the edge
+  // to account for padding, margins other elements etc.
   const scrollContainerRect = scrollContainer.getBoundingClientRect();
   const offset = focalPointOffset * scrollContainer.clientWidth;
   const offsetLeft = offset + scrollContainerRect.left;
@@ -169,15 +170,22 @@ const useCarouselNew = ({
     const scrollContainer = scrollContainerRef.current;
     if (!scrollContainer) return;
 
+    let mediaItems = Array.from(
+      scrollContainer.querySelectorAll(".carousel-slide")
+    );
+
+    mediaItems = direction === "start" ? mediaItems.reverse() : mediaItems;
+
+    // Only used when direction === "start" & moving to image above threshold
+    const reversedMediaItems = mediaItems.slice().reverse();
+
     // Allow for a single offset value to be used for both directions
     const focalOffsetSign = direction === "start" ? -1 : 1;
     const focalOffset = focalOffsetSign * focalPointOffset;
 
-    console.log("focalImageIndex", focalImageIndex);
-
     // Handle the case where the user is scrolling in one direction
     // But then uses the button to go in the opposite direction
-    // TODO the bug mentioned below
+    // FIXME Currently just centers the focalImage with the bug mentioned below
     let focalImageIndexOverride;
     // const { isScrollingTowardsEnd, isScrollingTowardsStart } =
     //   detectScrollDirection(scrollContainer?.scrollLeft, prevScrollLeft);
@@ -188,17 +196,6 @@ const useCarouselNew = ({
     //   focalImageIndexOverride = Math.min(focalImageIndex + 1, slidesCount - 1);
     // }
     const focalIndex = focalImageIndexOverride ?? focalImageIndex;
-
-    console.log("focalIndex", focalIndex);
-
-    let mediaItems = Array.from(
-      scrollContainer.querySelectorAll(".carousel-slide")
-    );
-    const scrollSnapProps = ["center", "start", "end"] as const;
-    mediaItems = direction === "start" ? mediaItems.reverse() : mediaItems;
-
-    // Only used when direction === "start" & moving to image above threshold
-    const reversedMediaItems = mediaItems.slice().reverse();
 
     // Basic idea: Find the first item whose focal point is past
     // the scroll container's center in the direction of travel.
@@ -214,7 +211,7 @@ const useCarouselNew = ({
     // Only used when direction === "start" & moving to image above threshold
     const previousItem = reversedMediaItems[focalIndex].previousElementSibling;
     const isNotStartOrEnd = focalIndex !== 0 && focalIndex !== slidesCount - 1;
-
+    const scrollSnapProps = ["center", "start", "end"] as const;
     for (const mediaItem of mediaItems) {
       const focalPoint =
         scrollSnapProps.find(
@@ -242,7 +239,7 @@ const useCarouselNew = ({
       // BUG If both focal points are inside the slide
       // and scrolling one direction but
       // button to go opposite direction,
-      // then the focal slide it centers itself
+      // then the focal slide centers itself
 
       // It should center the next slide or previous slide
 
@@ -262,12 +259,8 @@ const useCarouselNew = ({
           scrollContainer
         );
 
-        console.log("visiblePercentage", visiblePercentage);
-
         const isFocalPointAboveThreshold =
           visiblePercentage > skipAheadThreshold;
-
-        // console.log("distanceToPreviousItem", distanceToPreviousItem);
         if (
           direction === "end" &&
           distanceToNextItem &&

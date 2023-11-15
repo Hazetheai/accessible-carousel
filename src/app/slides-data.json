@@ -1,0 +1,51 @@
+[
+  {
+    "type": "image",
+    "title": "Image 1",
+    "src": "TCpfPxKPOvk",
+    "_id": "d290f1ee-6c54-4b01-90e6-d701748f0852"
+  },
+  {
+    "type": "product",
+    "title": "Awesome Product",
+    "src": "WLUHO9A_xik",
+    "_id": "d290f1ee-6c54-4b01-90e6-d701748f0853"
+  },
+  {
+    "type": "interactive",
+    "title": "Interactive Slide",
+    "src": "",
+    "_id": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+  },
+  {
+    "type": "video",
+    "title": "Image 3",
+    "src": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    "_id": "d290f1ee-6c54-4b01-90e6-d701748f0854",
+    "fileType": "mp4"
+  },
+  {
+    "type": "product",
+    "title": "Awesome Product",
+    "src": "user/erondu",
+    "_id": "d290f1ee-6c54-4b01-90e6-d701748f0855"
+  },
+  {
+    "type": "image",
+    "title": "Image 5",
+    "src": "?nature,water",
+    "_id": "d290f1ee-6c54-4b01-90e6-d701748f0856"
+  },
+  {
+    "type": "image",
+    "title": "Image 6",
+    "src": "collection/190727",
+    "_id": "d290f1ee-6c54-4b01-90e6-d701748f0857"
+  },
+  {
+    "type": "image",
+    "title": "Image 7",
+    "src": "user/traceofwind/likes",
+    "_id": "d290f1ee-6c54-4b01-90e6-d701748f0858"
+  }
+]

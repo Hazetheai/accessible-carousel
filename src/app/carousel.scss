@@ -169,25 +169,17 @@
         object-fit: cover;
         object-position: center;
     }
+
+    &.video-slide {
+        width: 533px;
+    }
+    &.interactive-slide {
+        width: 533px;
+    }
 }
 
-// .carousel-controls {
-//     display: none;
-
-//     .js & {
-//         display: flex;
-//         justify-content: space-between;
-//         align-items: center;
-//         position: absolute;
-//         top: 0;
-//         padding: 1rem;
-//         background-color: hsl(0deg 0% 100% / 75%);
-//         backdrop-filter: blur(0.25rem);
-//         z-index: 1;
-//     }
-// }
-
 .carousel-control {
+    display: none;
     --offset-x: 0;
     cursor: pointer;
     /* Anchor the controls relative to the outer wrapper */
@@ -195,6 +187,9 @@
     /* Center the controls vertically */
     top: 50%;
     transform: translateY(-50%);
+    .js & {
+        display: block;
+    }
 }
 /* Don't allow icons to be event targets */
 .carousel-control * {
