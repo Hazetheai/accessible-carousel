@@ -207,10 +207,11 @@ const useCarouselNew = ({
     });
     let targetFocalPoint: number | undefined;
 
-    const nextItem = mediaItems[focalIndex].nextElementSibling;
-    // Only used when direction === "start" & moving to image above threshold
     const previousItem = reversedMediaItems[focalIndex].previousElementSibling;
+    const nextItem = mediaItems[focalIndex].nextElementSibling;
+
     const isNotStartOrEnd = focalIndex !== 0 && focalIndex !== slidesCount - 1;
+
     const scrollSnapProps = ["center", "start", "end"] as const;
     for (const mediaItem of mediaItems) {
       const focalPoint =

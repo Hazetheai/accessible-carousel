@@ -7,7 +7,7 @@
   },
   {
     "type": "product",
-    "title": "Awesome Product",
+    "title": "Awesome Product 1",
     "src": "WLUHO9A_xik",
     "_id": "d290f1ee-6c54-4b01-90e6-d701748f0853"
   },
@@ -26,13 +26,13 @@
   },
   {
     "type": "product",
-    "title": "Awesome Product 1",
+    "title": "Awesome Product 2",
     "src": "user/erondu",
-    "_id": "d290f1ee-6c54-4b01-90e6-d701748f0855"
+    "_id": "d290s1ee-6c54-4b01-90e6-d701748f0855"
   },
   {
     "type": "product",
-    "title": "Awesome Product",
+    "title": "Awesome Product 3",
     "src": "user/erondu",
     "_id": "d290f1ee-6c54-4b01-90e6-d701748f0855"
   },

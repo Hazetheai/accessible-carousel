@@ -42,7 +42,7 @@
         position: absolute;
         top: 0;
         left: 0;
-        width: calc(var(--skip-ahead-threshold, 1) * 50%);
+        width: calc(var(--skip-ahead-threshold, 1) * var(--width-of-previous-slide, 1));
         height: 100%;
         display: flex;
         justify-content: center;
@@ -57,7 +57,7 @@
         position: absolute;
         top: 0;
         right: 0;
-        width: calc(var(--skip-ahead-threshold, 1) * 50%);
+        width: calc(var(--skip-ahead-threshold, 1) * var(--width-of-next-slide));
         height: 100%;
         display: flex;
         justify-content: center;
@@ -172,10 +172,16 @@
 
     &.video-slide {
         width: 533px;
+        & video {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            object-position: center;
+        }
     }
-    &.interactive-slide {
-        width: 533px;
-    }
+    // &.interactive-slide {
+    //     width: 533px;
+    // }
 }
 
 .carousel-control {
