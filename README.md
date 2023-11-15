@@ -16,21 +16,23 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Front-end controls
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+From the front-end you will see a carousel loaded up with images and an interactive slide.
 
-## Learn More
+The carousel can be navigated using trackpad scroll (mac), arrow keys and the directional buttons.
 
-To learn more about Next.js, take a look at the following resources:
+You may enable the overlays via te "Show Overlays" button to see how the focal slide, and next possible slide is calculated.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The slide highlighted in red is the focal slide. The red lines are the focal offset.
+The blue overlays represent how much of the prev/next image must be visible before it is considered visible enough to skip
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Code
 
-## Deploy on Vercel
+The main hook is `useCarouselNew.tsx` -- to be renamed once this UI element is finalized
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The Markup is under `page.tsx` with basic layout elements in `layout.tsx`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Styles are in `globals.scss` & the carousel styles are in `carousel.scss`
+
+Slides data lives in `slides.json`
