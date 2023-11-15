@@ -73,7 +73,8 @@ const getDistanceToFocalPoint = ({
   const offset = focalPointOffset * scrollContainer.clientWidth;
   const offsetLeft = offset + scrollContainerRect.left;
   const offsetRight = offset + scrollContainerRect.right;
-
+  // console.log("offset", offset);
+  // console.log("offsetLeft", offsetLeft);
   const isHorizontalRtl = isRtl(element);
   const scrollContainerWidth = scrollContainer.clientWidth;
   const rect = element.getBoundingClientRect();
@@ -183,9 +184,8 @@ const useCarouselNew = ({
     const focalOffsetSign = direction === "start" ? -1 : 1;
     const focalOffset = focalOffsetSign * focalPointOffset;
 
-    // Handle the case where the user is scrolling in one direction
-    // But then uses the button to go in the opposite direction
-    // FIXME Currently just centers the focalImage with the bug mentioned below
+    // This will move the focal image to the on in the direction of travel,
+    // potentially moving "2" slides at once
     let focalImageIndexOverride;
     // const { isScrollingTowardsEnd, isScrollingTowardsStart } =
     //   detectScrollDirection(scrollContainer?.scrollLeft, prevScrollLeft);
@@ -236,13 +236,6 @@ const useCarouselNew = ({
           })
         : undefined;
 
-      // BUG If both focal points are inside the slide
-      // and scrolling one direction but
-      // button to go opposite direction,
-      // then the focal slide centers itself
-
-      // It should center the next slide or previous slide
-
       // Edge case: Focal image may be mostly visible, so move to the next image,
       // instead of centering the focal image, which can be frustrating and a bad UX
 
@@ -251,8 +244,6 @@ const useCarouselNew = ({
           mediaItem
         ) === focalIndex;
 
-      console.log("isFocalImage", isFocalImage);
-      console.log("mediaItem", mediaItem);
       if (isFocalImage && isNotStartOrEnd) {
         const visiblePercentage = calculateVisiblePercentage(
           mediaItem,
@@ -267,17 +258,15 @@ const useCarouselNew = ({
           distanceToNextItem > 0 &&
           isFocalPointAboveThreshold
         ) {
-          console.log(`centering on next item`);
           targetFocalPoint = distanceToNextItem;
           break;
         }
         if (
           direction === "start" &&
           distanceToPreviousItem &&
-          distanceToPreviousItem < 0 &&
+          distanceToPreviousItem < Math.abs(mediaItem.clientWidth * 0.5) &&
           isFocalPointAboveThreshold
         ) {
-          console.log(`centering on prev item`);
           targetFocalPoint = distanceToPreviousItem;
           break;
         }
@@ -296,7 +285,6 @@ const useCarouselNew = ({
         (direction === "start" && distanceToItem + 1 < scrollContainerCenter) ||
         (direction === "end" && distanceToItem - scrollContainerCenter > 1)
       ) {
-        console.log(`Usual Case`);
         targetFocalPoint = distanceToItem;
         break;
       }
