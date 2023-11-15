@@ -35,4 +35,4 @@ The Markup is under `page.tsx` with basic layout elements in `layout.tsx`
 
 Styles are in `globals.scss` & the carousel styles are in `carousel.scss`
 
-Slides data lives in `slides.json`
+Slides data lives in `slides-data.json`
