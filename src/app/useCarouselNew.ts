@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback } from 'react';
 
 type ThrottleFunction = <T extends unknown[]>(
   fn: (...args: T) => void
@@ -52,19 +52,19 @@ function detectScrollDirection(
 }
 
 const isRtl = (element: Element): boolean =>
-  window.getComputedStyle(element).direction === "rtl";
+  window.getComputedStyle(element).direction === 'rtl';
 
 interface GetDistanceToFocalPointParams {
   scrollContainer: HTMLElement;
   element: Element;
-  focalPoint?: "start" | "center" | "end";
+  focalPoint?: 'start' | 'center' | 'end';
   focalPointOffset?: number;
 }
 
 const getDistanceToFocalPoint = ({
   scrollContainer,
   element,
-  focalPoint = "center",
+  focalPoint = 'center',
   focalPointOffset = 0,
 }: GetDistanceToFocalPointParams): number => {
   // Calculate the distance from the start of the container to the edge
@@ -78,15 +78,15 @@ const getDistanceToFocalPoint = ({
   const scrollContainerWidth = scrollContainer.clientWidth;
   const rect = element.getBoundingClientRect();
   switch (focalPoint) {
-    case "start":
+    case 'start':
       return isHorizontalRtl
         ? scrollContainerWidth - rect.right - offsetRight
         : rect.left - offsetLeft;
-    case "end":
+    case 'end':
       return isHorizontalRtl
         ? scrollContainerWidth - rect.left - offsetRight
         : rect.right - offsetLeft;
-    case "center":
+    case 'center':
     default: {
       const centerFromLeft = rect.left + rect.width / 2;
       return isHorizontalRtl
@@ -107,9 +107,8 @@ const useCarouselNew = ({
   focalPointOffset?: number;
   skipAheadThreshold?: number;
 }) => {
-  const [focalSlideIndex, setfocalSlideIndex] = useState(initialIndex);
+  const [focalSlideIndex, setFocalSlideIndex] = useState(initialIndex);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-
   const prevScrollLeft = useRef(0);
 
   const handleCarouselScroll = useCallback(() => {
@@ -125,20 +124,22 @@ const useCarouselNew = ({
     //   Math.ceil(width + scrollLeft) >= scrollContainer.scrollWidth;
 
     // find the index of the item whose focal point is closest to the center of the scroll container
-    const mediaItems = Array.from(
-      scrollContainer.querySelectorAll(".carousel-slide")
+    const carouselSlides = Array.from(
+      scrollContainer.querySelectorAll('.carousel-slide')
     );
-    const { isScrollingTowardsEnd, isScrollingTowardsStart } =
-      detectScrollDirection(scrollContainer.scrollLeft, prevScrollLeft);
+    const { isScrollingTowardsEnd } = detectScrollDirection(
+      scrollContainer.scrollLeft,
+      prevScrollLeft
+    );
     const center = scrollContainer.clientWidth / 2;
-    const focalPoints = mediaItems.map((mediaItem) =>
+    const focalPoints = carouselSlides.map((carouselSlide) =>
       getDistanceToFocalPoint({
         focalPointOffset: isScrollingTowardsEnd
           ? focalPointOffset
           : -focalPointOffset,
         scrollContainer,
-        element: mediaItem,
-        focalPoint: "center",
+        element: carouselSlide,
+        focalPoint: 'center',
       })
     );
 
@@ -147,7 +148,7 @@ const useCarouselNew = ({
     );
     const closestFocalPointIndex = focalPoints.indexOf(closestFocalPoint);
 
-    setfocalSlideIndex(
+    setFocalSlideIndex(
       // isAtEnd ? slidesCount - 1 : isAtStart ? 0 : closestFocalPointIndex
       closestFocalPointIndex
     );
@@ -156,29 +157,29 @@ const useCarouselNew = ({
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
     if (!scrollContainer) return;
-    scrollContainer.addEventListener("scroll", throttle(handleCarouselScroll));
-    scrollContainer.addEventListener("scrollend", handleCarouselScroll);
+    scrollContainer.addEventListener('scroll', throttle(handleCarouselScroll));
+    scrollContainer.addEventListener('scrollend', handleCarouselScroll);
     handleCarouselScroll();
 
     return () => {
-      scrollContainer.removeEventListener("scroll", handleCarouselScroll);
-      scrollContainer.removeEventListener("scrollend", handleCarouselScroll);
+      scrollContainer.removeEventListener('scroll', handleCarouselScroll);
+      scrollContainer.removeEventListener('scrollend', handleCarouselScroll);
     };
   }, [handleCarouselScroll]);
 
   const scrollToIndex = useCallback((index: number) => {
     const scrollContainer = scrollContainerRef.current;
     if (!scrollContainer) return;
-    const mediaItems = Array.from(
-      scrollContainer.querySelectorAll(".carousel-slide")
+    const carouselSlides = Array.from(
+      scrollContainer.querySelectorAll('.carousel-slide')
     );
-    const targetItem = mediaItems[index];
+    const targetItem = carouselSlides[index];
     if (!targetItem) return;
     const targetFocalPoint = getDistanceToFocalPoint({
       focalPointOffset: 0,
       scrollContainer,
       element: targetItem,
-      focalPoint: "center",
+      focalPoint: 'center',
     });
     const scrollAmount = targetFocalPoint - scrollContainer.clientWidth / 2;
     scrollContainer.scrollBy({ left: scrollAmount });
@@ -189,35 +190,26 @@ const useCarouselNew = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const changeSlide = (direction: "start" | "end") => {
+  const changeSlide = (direction: 'start' | 'end') => {
     const scrollContainer = scrollContainerRef.current;
     if (!scrollContainer) return;
 
-    let mediaItems = Array.from(
-      scrollContainer.querySelectorAll(".carousel-slide")
+    let carouselSlides = Array.from(
+      scrollContainer.querySelectorAll('.carousel-slide')
     );
 
-    mediaItems = direction === "start" ? mediaItems.reverse() : mediaItems;
+    carouselSlides =
+      direction === 'start' ? carouselSlides.reverse() : carouselSlides;
 
     // Only used when direction === "start" & moving to image above threshold
-    const reversedMediaItems = mediaItems.slice().reverse();
+    const reversedCarouselSlides = carouselSlides.slice().reverse();
 
     // Allow for a single offset value to be used for both directions
-    const focalOffsetSign = direction === "start" ? -1 : 1;
+    const focalOffsetSign = direction === 'start' ? -1 : 1;
     const focalOffset = focalOffsetSign * focalPointOffset;
 
     // This will move the focal image to the on in the direction of travel,
     // potentially moving "2" slides at once
-    let focalSlideIndexOverride;
-    // const { isScrollingTowardsEnd, isScrollingTowardsStart } =
-    //   detectScrollDirection(scrollContainer?.scrollLeft, prevScrollLeft);
-    // if (isScrollingTowardsEnd && direction === "start") {
-    //   focalSlideIndexOverride = Math.max(focalSlideIndex - 1, 0);
-    // }
-    // if (isScrollingTowardsStart && direction === "end") {
-    //   focalSlideIndexOverride = Math.min(focalSlideIndex + 1, slidesCount - 1);
-    // }
-    const focalIndex = focalSlideIndexOverride ?? focalSlideIndex;
 
     // Basic idea: Find the first item whose focal point is past
     // the scroll container's center in the direction of travel.
@@ -225,58 +217,60 @@ const useCarouselNew = ({
       focalPointOffset: focalOffset,
       scrollContainer,
       element: scrollContainer,
-      focalPoint: "center",
+      focalPoint: 'center',
     });
     let targetFocalPoint: number | undefined;
 
-    const previousItem = reversedMediaItems[focalIndex].previousElementSibling;
-    const nextItem = mediaItems[focalIndex].nextElementSibling;
-
-    const isNotStartOrEnd = focalIndex !== 0 && focalIndex !== slidesCount - 1;
-
-    const scrollSnapProps = ["center", "start", "end"] as const;
-    for (const mediaItem of mediaItems) {
+    const scrollSnapProps = ['center', 'start', 'end'] as const;
+    for (const carouselSlide of carouselSlides) {
       const focalPoint =
         scrollSnapProps.find(
-          (el) => el === window.getComputedStyle(mediaItem).scrollSnapAlign
-        ) || "center";
-
-      const distanceToNextItem = nextItem
-        ? getDistanceToFocalPoint({
-            focalPointOffset: focalOffset,
-            scrollContainer,
-            element: nextItem,
-            focalPoint,
-          })
-        : undefined;
-
-      const distanceToPreviousItem = previousItem
-        ? getDistanceToFocalPoint({
-            focalPointOffset: focalOffset,
-            scrollContainer,
-            element: previousItem,
-            focalPoint,
-          })
-        : undefined;
+          (el) => el === window.getComputedStyle(carouselSlide).scrollSnapAlign
+        ) || 'center';
 
       // Edge case: Focal image may be mostly visible, so move to the next image,
       // instead of centering the focal image, which can be frustrating and a bad UX
 
-      const isfocalSlide =
-        (direction === "start" ? reversedMediaItems : mediaItems).indexOf(
-          mediaItem
-        ) === focalIndex;
+      const isFocalSlide =
+        (direction === 'start'
+          ? reversedCarouselSlides
+          : carouselSlides
+        ).indexOf(carouselSlide) === focalSlideIndex;
 
-      if (isfocalSlide && isNotStartOrEnd) {
+      const isNotStartOrEnd =
+        focalSlideIndex !== 0 && focalSlideIndex !== slidesCount - 1;
+
+      if (isFocalSlide && isNotStartOrEnd) {
+        const previousItem =
+          reversedCarouselSlides[focalSlideIndex].previousElementSibling;
+        const nextItem = carouselSlides[focalSlideIndex].nextElementSibling;
+        const distanceToNextItem = nextItem
+          ? getDistanceToFocalPoint({
+              focalPointOffset: focalOffset,
+              scrollContainer,
+              element: nextItem,
+              focalPoint,
+            })
+          : undefined;
+
+        const distanceToPreviousItem = previousItem
+          ? getDistanceToFocalPoint({
+              focalPointOffset: focalOffset,
+              scrollContainer,
+              element: previousItem,
+              focalPoint,
+            })
+          : undefined;
+
         const visiblePercentage = calculateVisiblePercentage(
-          mediaItem,
+          carouselSlide,
           scrollContainer
         );
 
         const isFocalPointAboveThreshold =
           visiblePercentage > skipAheadThreshold;
         if (
-          direction === "end" &&
+          direction === 'end' &&
           distanceToNextItem &&
           distanceToNextItem > 0 &&
           isFocalPointAboveThreshold
@@ -285,9 +279,9 @@ const useCarouselNew = ({
           break;
         }
         if (
-          direction === "start" &&
+          direction === 'start' &&
           distanceToPreviousItem &&
-          distanceToPreviousItem < Math.abs(mediaItem.clientWidth * 0.5) &&
+          distanceToPreviousItem < Math.abs(carouselSlide.clientWidth * 0.5) &&
           isFocalPointAboveThreshold
         ) {
           targetFocalPoint = distanceToPreviousItem;
@@ -300,24 +294,23 @@ const useCarouselNew = ({
       const distanceToItem = getDistanceToFocalPoint({
         focalPointOffset: focalOffset,
         scrollContainer,
-        element: mediaItem,
+        element: carouselSlide,
         focalPoint,
       });
 
       if (
-        (direction === "start" && distanceToItem + 1 < scrollContainerCenter) ||
-        (direction === "end" && distanceToItem - scrollContainerCenter > 1)
+        (direction === 'start' && distanceToItem + 1 < scrollContainerCenter) ||
+        (direction === 'end' && distanceToItem - scrollContainerCenter > 1)
       ) {
         targetFocalPoint = distanceToItem;
         break;
       }
     }
 
-    if (typeof targetFocalPoint === "undefined") return;
+    if (typeof targetFocalPoint === 'undefined') return;
 
     // RTL flips the direction
     const sign = isRtl(scrollContainer) ? -1 : 1;
-
     const scrollAmount = sign * (targetFocalPoint - scrollContainerCenter);
     scrollContainer.scrollBy({ left: scrollAmount });
   };

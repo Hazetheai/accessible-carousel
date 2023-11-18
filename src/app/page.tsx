@@ -1,27 +1,27 @@
-"use client";
-import { useEffect, useRef, useState } from "react";
-import "./carousel.scss";
-import _slidesData from "./slides-data.json";
-import { useCarouselNew } from "./useCarouselNew";
+'use client';
+import { useEffect, useRef, useState } from 'react';
+import './carousel.scss';
+import _slidesData from './slides-data.json';
+import { useCarouselNew } from './useCarouselNew';
 
-const slidesData = _slidesData.filter((slide) => slide.type !== "video");
+const slidesData = _slidesData.filter((slide) => slide.type !== 'video');
 
 const findFirstFocusableElement = (container: Element | undefined) => {
   return container
-    ? Array.from(container.getElementsByTagName("*")).find(isFocusable)
+    ? Array.from(container.getElementsByTagName('*')).find(isFocusable)
     : null;
 };
 
 const isFocusable = (element: Element) => {
   const focusableElements = [
-    "a[href]",
-    "button:not([disabled])",
-    "input:not([disabled])",
-    "select:not([disabled])",
-    "textarea:not([disabled])",
+    'a[href]',
+    'button:not([disabled])',
+    'input:not([disabled])',
+    'select:not([disabled])',
+    'textarea:not([disabled])',
     "[tabindex]:not([tabindex='-1'])",
-    "video",
-    "[contenteditable]",
+    'video',
+    '[contenteditable]',
   ];
   return focusableElements.some((selector) => element.matches(selector));
 };
@@ -32,6 +32,7 @@ export default function Home() {
   const [skipAheadThreshold, setSkipAheadThreshold] = useState(0.7);
   const [toggleOverlays, setToggleOverlays] = useState(false);
   const [toggleSlideButton, setToggleSlideButton] = useState(false);
+  const [toggleOutsideButton, setToggleOutsideButton] = useState(false);
   //
   const [isTouched, setIsTouched] = useState(false);
 
@@ -46,8 +47,8 @@ export default function Home() {
 
   // remove no-js class on load
   useEffect(() => {
-    document.documentElement.classList.remove("no-js");
-    document.documentElement.classList.add("js");
+    document.documentElement.classList.remove('no-js');
+    document.documentElement.classList.add('js');
   }, []);
 
   useEffect(() => {
@@ -57,22 +58,28 @@ export default function Home() {
     if (
       focalSlideIndex !== null &&
       slideRefs.current[focalSlideIndex] &&
-      firstFocusableInput
+      !!findFirstFocusableElement(slideRefs.current[focalSlideIndex])
     ) {
       (firstFocusableInput as HTMLElement).focus();
     } else {
-      isTouched && scrollContainerRef.current?.focus();
+      const isSlideFocused = slideRefs.current.some((slide, index) => {
+        return (
+          index !== focalSlideIndex &&
+          slide === document.activeElement?.closest('.carousel-slide')
+        );
+      });
+      isSlideFocused && scrollContainerRef.current?.focus();
     }
   }, [focalSlideIndex, scrollContainerRef, isTouched]);
 
   // Used for illustrative purposes
   const widthOfPreviousSlide =
-    scrollContainerRef.current?.querySelectorAll(".carousel-slide")[
+    scrollContainerRef.current?.querySelectorAll('.carousel-slide')[
       focalSlideIndex - 1
     ]?.clientWidth || 0;
 
   const widthOfNextSlide =
-    scrollContainerRef.current?.querySelectorAll(".carousel-slide")[
+    scrollContainerRef.current?.querySelectorAll('.carousel-slide')[
       focalSlideIndex + 1
     ]?.clientWidth || 0;
 
@@ -82,7 +89,7 @@ export default function Home() {
         Skip to next section
       </a>
       <button onClick={() => setToggleOverlays(!toggleOverlays)}>
-        Toggle Overlays {toggleOverlays ? "Off" : "On"}
+        Toggle Overlays {toggleOverlays ? 'Off' : 'On'}
       </button>
       {toggleOverlays && (
         <div>
@@ -98,7 +105,7 @@ export default function Home() {
               step="0.01"
               value={focalPointOffset}
               onChange={(e) => setfocalPointOffset(parseFloat(e.target.value))}
-            />{" "}
+            />{' '}
           </div>
           <div>
             <label htmlFor="focal-point-skipAheadThreshold">
@@ -115,20 +122,20 @@ export default function Home() {
               onChange={(e) =>
                 setSkipAheadThreshold(parseFloat(e.target.value))
               }
-            />{" "}
+            />{' '}
           </div>
         </div>
       )}
       <section
-        className={`carousel ${toggleOverlays ? "overlays-active" : ""} `}
+        className={`carousel ${toggleOverlays ? 'overlays-active' : ''} `}
       >
         <div
           style={{
             // @ts-ignore - used for illustrative purposes
-            "--center-point-offset": `${(1 + focalPointOffset * 2).toFixed(2)}`,
-            "--skip-ahead-threshold": `${skipAheadThreshold.toFixed(2)}`,
-            "--width-of-previous-slide": `${widthOfPreviousSlide}px`,
-            "--width-of-next-slide": `${widthOfNextSlide}px`,
+            '--center-point-offset': `${(1 + focalPointOffset * 2).toFixed(2)}`,
+            '--skip-ahead-threshold': `${skipAheadThreshold.toFixed(2)}`,
+            '--width-of-previous-slide': `${widthOfPreviousSlide}px`,
+            '--width-of-next-slide': `${widthOfNextSlide}px`,
           }}
           tabIndex={0}
           onFocus={() => {
@@ -136,17 +143,17 @@ export default function Home() {
           }}
           //  Add event listeners for keyboard navigation
           onKeyUp={(e) => {
-            if (e.key === "ArrowLeft") {
-              changeSlide("start");
+            if (e.key === 'ArrowLeft') {
+              changeSlide('start');
               e.preventDefault();
             }
-            if (e.key === "ArrowRight") {
-              changeSlide("end");
+            if (e.key === 'ArrowRight') {
+              changeSlide('end');
               e.preventDefault();
             }
           }}
           className={`carousel-scroll-container ${
-            !!changeSlide ? "with-js" : ""
+            !!changeSlide ? 'with-js' : ''
           }`}
           role="region"
           aria-roledescription="carousel"
@@ -167,7 +174,7 @@ export default function Home() {
                   role="group"
                   aria-labelledby={`carousel-item-${index + 1}-heading`}
                   className={`carousel-slide ${
-                    focalSlideIndex === index ? "focal-image" : ""
+                    focalSlideIndex === index ? 'focal-image' : ''
                   } ${slide.type}-slide `}
                   id={`carousel-item-${index + 1}`}
                   aria-roledescription="Slide"
@@ -177,19 +184,19 @@ export default function Home() {
                     <figcaption id={`carousel-item-${index + 1}-heading`}>
                       {slide.title || `Slide ${index + 1} of ${arr.length}`}
                     </figcaption>
-                    {["image", "product"].includes(slide.type) ? (
+                    {['image', 'product'].includes(slide.type) ? (
                       <SlideImage
                         imgURL={slide.src}
                         altText={slide.title}
                         isfocalSlide={focalSlideIndex === index}
                         index={index}
                       />
-                    ) : slide.type === "video" ? (
+                    ) : slide.type === 'video' ? (
                       <SlideVideo
                         videoURL={slide.src}
-                        fileType={slide.fileType || ""}
+                        fileType={slide.fileType || ''}
                       />
-                    ) : slide.type === "interactive" ? (
+                    ) : slide.type === 'interactive' ? (
                       <InterActiveSlideWithButtons
                         title={slide.title}
                         isToggled={toggleSlideButton}
@@ -218,7 +225,7 @@ export default function Home() {
               aria-label="Previous"
               data-direction="start"
               onClick={(e) => {
-                changeSlide("start");
+                changeSlide('start');
               }}
             >
               <svg
@@ -241,7 +248,7 @@ export default function Home() {
               aria-label="Next"
               data-direction="end"
               onClick={(e) => {
-                changeSlide("end");
+                changeSlide('end');
               }}
             >
               <svg
@@ -259,7 +266,12 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="next-section">Next section</section>
+      <section id="next-section">
+        Next section
+        <button onClick={() => setToggleOutsideButton(!toggleOutsideButton)}>
+          Toggle Outside Button {toggleOutsideButton ? 'Off' : 'On'}
+        </button>
+      </section>
     </main>
   );
 }
@@ -319,9 +331,9 @@ const SlideVideo = ({
     <div className="video-container">
       <video controls aria-label="Video 1" poster="video-poster.jpg">
         {/* Add your video source and other attributes here */}
-        {fileType === "webm" && <source src={videoURL} type="video/webm" />}
-        {fileType === "mp4" && <source src={videoURL} type="video/mp4" />}
-        {fileType === "ogg" && <source src={videoURL} type="video/ogg" />}
+        {fileType === 'webm' && <source src={videoURL} type="video/webm" />}
+        {fileType === 'mp4' && <source src={videoURL} type="video/mp4" />}
+        {fileType === 'ogg' && <source src={videoURL} type="video/ogg" />}
 
         {/* Closed captions or subtitles for spoken content */}
         <track
@@ -367,7 +379,7 @@ const InterActiveSlideWithButtons = ({
         Click Me
       </button>
       <div className="interactive-slide__output">
-        {isToggled ? "ON" : "OFF"}
+        {isToggled ? 'ON' : 'OFF'}
       </div>
     </div>
   );
