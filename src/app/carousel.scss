@@ -1,25 +1,25 @@
 .carousel {
-    position: relative;
-    width: 100%;
+    // position: relative;
+    // width: 100%;
 }
 
 .carousel-scroll-container {
     /* Enable horizontal scrolling */
-    overflow-x: auto;
+    // overflow-x: auto;
     /* Enable horizontal scroll snap */
-    scroll-snap-type: x proximity;
+    // scroll-snap-type: x proximity;
     /* Smoothly snap from one focal point to another */
-    scroll-behavior: smooth;
+    // scroll-behavior: smooth;
 
     // Modifier classes for a full width slideshow
-    .slideshow & {
-        /* Mandatory scroll snap is more consistent for a slideshow */
-        scroll-snap-type: x mandatory;
-    }
+    // .slideshow & {
+    //     /* Mandatory scroll snap is more consistent for a slideshow */
+    //     scroll-snap-type: x mandatory;
+    // }
 
-    &.with-js {
-        scroll-snap-type: none;
-    }
+    // &.with-js {
+    //     scroll-snap-type: none;
+    // }
 
     .overlays-active & .center-point {
         position: absolute;
@@ -72,28 +72,28 @@
 
 .carousel-items {
     /* Arrange media horizontally */
-    display: flex;
-    gap: 2rem;
+    // display: flex;
+    // gap: 2rem;
 }
 
 .carousel-slide {
-    position: relative;
-    /* Limit the height of each media item */
-    height: 300px;
-    /* Prevent media from shrinking */
-    flex-shrink: 0;
-    /* The focal point for each item is the center */
-    scroll-snap-align: center;
+    // position: relative;
+    // /* Limit the height of each media item */
+    // height: 300px;
+    // /* Prevent media from shrinking */
+    // flex-shrink: 0;
+    // /* The focal point for each item is the center */
+    // scroll-snap-align: center;
 
-    &:first-of-type {
-        /* Allow users to fully scroll to the start */
-        scroll-snap-align: start;
-    }
+    // &:first-of-type {
+    //     /* Allow users to fully scroll to the start */
+    //     scroll-snap-align: start;
+    // }
 
-    &:last-of-type {
-        /* Allow users to fully scroll to the end */
-        scroll-snap-align: end;
-    }
+    // &:last-of-type {
+    //     /* Allow users to fully scroll to the end */
+    //     scroll-snap-align: end;
+    // }
 
     // .with-js & {
     //     /* Disable scroll snap */
@@ -123,31 +123,53 @@
     & figure,
     & .carousel-item-wrapper,
     & > * {
-        position: relative;
-        & figcaption {
-            color: white;
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 0.25rem;
-            text-align: center;
-            background-color: hsl(0deg 0% 0% / 75%);
-            font-size: small;
-        }
-        & img {
-            /* Remove line height (typically done in a CSS reset) */
-            display: block;
-            /* Responsive width based on aspect ratio */
-            width: auto;
-        }
+        // position: relative;
+        // & figcaption {
+        //     color: white;
+        //     position: absolute;
+        //     bottom: 0;
+        //     left: 0;
+        //     width: 100%;
+        //     padding: 0.25rem;
+        //     text-align: center;
+        //     background-color: hsl(0deg 0% 0% / 75%);
+        //     font-size: small;
+        // }
+        // & img {
+        //     /* Remove line height (typically done in a CSS reset) */
+        //     display: block;
+        //     /* Responsive width based on aspect ratio */
+        //     width: auto;
+        // }
     }
-    & > *,
-    & picture,
-    & figure,
-    & img {
-        height: 100%;
-    }
+    // & > *,
+    // & picture,
+    // & figure,
+    // & img {
+    //     height: 100%;
+    // }
+
+    // // Modifier classes for a full width slideshow
+    // .slideshow & {
+    //     /* Or whatever value works for you */
+    //     height: 300px;
+    //     /* Full-width slides */
+    //     width: 100%;
+    // }
+
+    // .slideshow & > *,
+    // .slideshow & picture,
+    // .slideshow & figure,
+    // .slideshow & img {
+    //     /* Cover the slide */
+    //     width: 100%;
+    //     height: 100%;
+    // }
+    // .slideshow & img {
+    //     /* Crop and center overflowing images */
+    //     object-fit: cover;
+    //     object-position: center;
+    // }
 
     &.video-slide {
         width: 533px;
@@ -161,36 +183,149 @@
 }
 
 .carousel-control {
-    display: none;
-    --offset-x: 0;
-    cursor: pointer;
-    /* Anchor the controls relative to the outer wrapper */
-    position: absolute;
-    /* Center the controls vertically */
-    top: 50%;
-    transform: translateY(-50%);
-    .js & {
-        display: block;
-    }
+    // display: none;
+    // --offset-x: 0;
+    // cursor: pointer;
+    // /* Anchor the controls relative to the outer wrapper */
+    // position: absolute;
+    // /* Center the controls vertically */
+    // top: 50%;
+    // transform: translateY(-50%);
+    // .js & {
+    //     display: block;
+    // }
 }
 /* Don't allow icons to be event targets */
-.carousel-control * {
-    pointer-events: none;
-}
-.carousel-control[data-direction="start"] {
-    /* Same as left in LTR and right in RTL */
-    inset-inline-start: var(--offset-x);
-    &[aria-disabled="true"] {
-        filter: opacity(0.5);
-        cursor: not-allowed;
-    }
-}
-.carousel-control[data-direction="end"] {
-    /* Same as right in LTR and left in RTL */
-    inset-inline-end: var(--offset-x);
+// .carousel-control * {
+//     pointer-events: none;
+// }
+// .carousel-control[data-direction="start"] {
+//     /* Same as left in LTR and right in RTL */
+//     inset-inline-start: var(--offset-x);
+//     &[aria-disabled="true"] {
+//         filter: opacity(0.5);
+//         cursor: not-allowed;
+//     }
+// }
+// .carousel-control[data-direction="end"] {
+//     /* Same as right in LTR and left in RTL */
+//     inset-inline-end: var(--offset-x);
 
-    &[aria-disabled="true"] {
-        filter: opacity(0.5);
-        cursor: not-allowed;
-    }
-}
+//     &[aria-disabled="true"] {
+//         filter: opacity(0.5);
+//         cursor: not-allowed;
+//     }
+// }
+// .carousel {
+//     @apply relative w-full;
+// }
+
+// .carousel-scroll-container {
+//     @apply overflow-x-auto scroll-snap-type-x-proximity scroll-behavior-smooth;
+
+//     .slideshow & {
+//         @apply scroll-snap-type-x-mandatory;
+//     }
+
+//     &.with-js {
+//         @apply scroll-snap-type-none;
+//     }
+
+//     .overlays-active & .center-point {
+//         @apply absolute top-0 w-1 h-full bg-red-500 shadow-red-500 z-99;
+
+//         &.focal-point-start {
+//             @apply left-[calc(50% * var(--center-point-offset, 1))];
+//         }
+//         &.focal-point-end {
+//             @apply right-[calc(50% * var(--center-point-offset, 1))];
+//         }
+//     }
+
+//     .overlays-active &::before {
+//         @apply absolute top-0 left-0 w-[calc(var(--skip-ahead-threshold, 1) * var(--width-of-previous-slide, 1))] h-full flex justify-center items-center overflow-hidden z-1 bg-hsla-244-100-50-25 pointer-events-none;
+//     }
+//     .overlays-active &::after {
+//         @apply absolute top-0 right-0 w-[calc(var(--skip-ahead-threshold, 1) * var(--width-of-next-slide))] h-full flex justify-center items-center overflow-hidden z-1 bg-hsla-244-100-50-25 pointer-events-none;
+//     }
+// }
+
+// .carousel-items {
+//     @apply flex gap-8;
+// }
+
+// .carousel-slide {
+//     @apply relative h-96 flex-shrink-0 scroll-snap-align-center;
+
+//     &:first-of-type {
+//         @apply scroll-snap-align-start;
+//     }
+
+//     &:last-of-type {
+//         @apply scroll-snap-align-end;
+//     }
+
+//     .overlays-active &.focal-image::after {
+//         @apply absolute top-0 left-0 bg-hsla-0-100-50-25 z-1 w-full h-full pointer-events-none;
+//     }
+//     .overlays-active & .center-point {
+//         @apply absolute top-0 left-1/2 w-1 h-full bg-blue-500 z-99;
+//     }
+
+//     & figure,
+//     & .carousel-item-wrapper,
+//     & > * {
+//         @apply relative;
+
+//         & figcaption {
+//             @apply text-white absolute bottom-0 left-0 w-full p-1 text-center bg-hsl-0-0-0-75 text-sm;
+//         }
+//         & img {
+//             @apply block w-auto;
+//         }
+//     }
+//     & > *,
+//     & picture,
+//     & figure,
+//     & img {
+//         @apply h-full;
+//     }
+
+//     &.video-slide {
+//         @apply w-96;
+
+//         & video {
+//             @apply w-full aspect-w-16 aspect-h-9 object-cover object-center;
+//         }
+//     }
+// }
+
+// .carousel-control {
+//     @apply hidden;
+//     --offset-x: 0;
+//     @apply cursor-pointer absolute top-1/2 -translate-y-1/2;
+
+//     .js & {
+//         @apply block;
+//     }
+// }
+
+// .carousel-control * {
+//     @apply pointer-events-none;
+// }
+
+// .carousel-control[data-direction="start"] {
+//     @apply inset-inline-start-0;
+
+//     &[aria-disabled="true"] {
+//         @apply filter-opacity-50 cursor-not-allowed;
+//     }
+// }
+
+// .carousel-control[data-direction="end"] {
+//     @apply inset-inline-end-0;
+
+//     &[aria-disabled="true"] {
+//         @apply filter-opacity-50 cursor-not-allowed;
+//     }
+// }
