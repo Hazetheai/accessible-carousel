@@ -7,39 +7,18 @@ import { InterActiveSlideWithButtons, SlideImage, SlideVideo } from './slides';
 
 const slidesData = _slidesData.filter((slide) => slide.type !== 'video');
 
-const findFirstFocusableElement = (container: Element | undefined) => {
-  return container
-    ? Array.from(container.getElementsByTagName('*')).find(isFocusable)
-    : null;
-};
-
-const isFocusable = (element: Element) => {
-  const focusableElements = [
-    'a[href]',
-    'button:not([disabled])',
-    'input:not([disabled])',
-    'select:not([disabled])',
-    'textarea:not([disabled])',
-    "[tabindex]:not([tabindex='-1'])",
-    'video',
-    '[contenteditable]',
-  ];
-  return focusableElements.some((selector) => element.matches(selector));
-};
-
 export default function Home() {
   const [toggleSlideButton, setToggleSlideButton] = useState(false);
   const [toggleOutsideButton, setToggleOutsideButton] = useState(false);
 
-  const { focalSlideIndex, changeSlide, scrollContainerRef } = useCarousel({
-    slidesCount: slidesData.length,
-    focalPointOffset: 0.05,
-    skipAheadThreshold: 0.9,
-    initialIndex: 0,
-  });
+  const { focalSlideIndex, changeSlide, scrollContainerRef, slideRefs } =
+    useCarousel({
+      slidesCount: slidesData.length,
+      focalPointOffset: 0.05,
+      skipAheadThreshold: 0.9,
+      initialIndex: 0,
+    });
   const isJS = !!changeSlide;
-
-  const slideRefs = useRef<HTMLDivElement[]>([]);
 
   // remove no-js class on load
   useEffect(() => {
@@ -48,27 +27,6 @@ export default function Home() {
       document.documentElement.classList.add('js');
     }
   }, [isJS]);
-
-  useEffect(() => {
-    const firstFocusableInput = findFirstFocusableElement(
-      slideRefs?.current[focalSlideIndex]
-    );
-    if (
-      focalSlideIndex !== null &&
-      slideRefs.current[focalSlideIndex] &&
-      !!findFirstFocusableElement(slideRefs.current[focalSlideIndex])
-    ) {
-      (firstFocusableInput as HTMLElement).focus();
-    } else {
-      const isSlideFocused = slideRefs.current.some((slide, index) => {
-        return (
-          index !== focalSlideIndex &&
-          slide === document.activeElement?.closest('.carousel-slide')
-        );
-      });
-      isSlideFocused && scrollContainerRef.current?.focus();
-    }
-  }, [focalSlideIndex, scrollContainerRef]);
 
   return (
     <main>

@@ -15,6 +15,26 @@ const throttle: ThrottleFunction = (fn) => {
   };
 };
 
+const findFirstFocusableElement = (container: Element | undefined) => {
+  return container
+    ? Array.from(container.getElementsByTagName('*')).find(isFocusable)
+    : null;
+};
+
+const isFocusable = (element: Element) => {
+  const focusableElements = [
+    'a[href]',
+    'button:not([disabled])',
+    'input:not([disabled])',
+    'select:not([disabled])',
+    'textarea:not([disabled])',
+    "[tabindex]:not([tabindex='-1'])",
+    'video',
+    '[contenteditable]',
+  ];
+  return focusableElements.some((selector) => element.matches(selector));
+};
+
 function calculateVisiblePercentage(
   element: Element | null,
   scrollContainer: HTMLElement
@@ -110,6 +130,7 @@ const useCarousel = ({
   const [focalSlideIndex, setFocalSlideIndex] = useState(initialIndex);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const prevScrollLeft = useRef(0);
+  const slideRefs = useRef<HTMLDivElement[]>([]);
 
   const handleCarouselScroll = useCallback(() => {
     const scrollContainer = scrollContainerRef.current;
@@ -189,6 +210,27 @@ const useCarousel = ({
     scrollToIndex(initialIndex);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    const firstFocusableInput = findFirstFocusableElement(
+      slideRefs?.current[focalSlideIndex]
+    );
+    if (
+      focalSlideIndex !== null &&
+      slideRefs.current[focalSlideIndex] &&
+      !!findFirstFocusableElement(slideRefs.current[focalSlideIndex])
+    ) {
+      (firstFocusableInput as HTMLElement).focus();
+    } else {
+      const isSlideFocused = slideRefs.current.some((slide, index) => {
+        return (
+          index !== focalSlideIndex &&
+          slide === document.activeElement?.closest('.carousel-slide')
+        );
+      });
+      isSlideFocused && scrollContainerRef.current?.focus();
+    }
+  }, [focalSlideIndex, scrollContainerRef]);
 
   const changeSlide = (direction: 'start' | 'end') => {
     const scrollContainer = scrollContainerRef.current;
@@ -319,6 +361,7 @@ const useCarousel = ({
     scrollContainerRef,
     focalSlideIndex,
     changeSlide: throttle(changeSlide),
+    slideRefs,
   };
 };
 
