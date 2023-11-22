@@ -1,9 +1,9 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-// import './carousel.scss';
 import _slidesData from './slides-data.json';
-import { useCarouselNew } from './useCarouselNew';
+import { useCarousel } from './useCarousel';
 import './globals.css';
+import { InterActiveSlideWithButtons, SlideImage, SlideVideo } from './slides';
 
 const slidesData = _slidesData.filter((slide) => slide.type !== 'video');
 
@@ -28,19 +28,13 @@ const isFocusable = (element: Element) => {
 };
 
 export default function Home() {
-  //  Used for illustrative purposes
-  const [focalPointOffset, setfocalPointOffset] = useState(0.05);
-  const [skipAheadThreshold, setSkipAheadThreshold] = useState(0.7);
-  const [toggleOverlays, setToggleOverlays] = useState(false);
   const [toggleSlideButton, setToggleSlideButton] = useState(false);
   const [toggleOutsideButton, setToggleOutsideButton] = useState(false);
-  //
-  const [isTouched, setIsTouched] = useState(false);
 
-  const { focalSlideIndex, changeSlide, scrollContainerRef } = useCarouselNew({
+  const { focalSlideIndex, changeSlide, scrollContainerRef } = useCarousel({
     slidesCount: slidesData.length,
-    focalPointOffset,
-    skipAheadThreshold,
+    focalPointOffset: 0.05,
+    skipAheadThreshold: 0.9,
     initialIndex: 0,
   });
   const isJS = !!changeSlide;
@@ -74,80 +68,17 @@ export default function Home() {
       });
       isSlideFocused && scrollContainerRef.current?.focus();
     }
-  }, [focalSlideIndex, scrollContainerRef, isTouched]);
-
-  // Used for illustrative purposes
-  const widthOfPreviousSlide =
-    scrollContainerRef.current?.querySelectorAll('.carousel-slide')[
-      focalSlideIndex - 1
-    ]?.clientWidth || 0;
-
-  const widthOfNextSlide =
-    scrollContainerRef.current?.querySelectorAll('.carousel-slide')[
-      focalSlideIndex + 1
-    ]?.clientWidth || 0;
+  }, [focalSlideIndex, scrollContainerRef]);
 
   return (
     <main>
       <a href="#next-section" className="skip-link">
         Skip to next section
       </a>
-      <button onClick={() => setToggleOverlays(!toggleOverlays)}>
-        Toggle Overlays {toggleOverlays ? 'Off' : 'On'}
-      </button>
 
-      {toggleOverlays && (
-        <div>
-          <p>Current Focal Image Index {focalSlideIndex}</p>
-          <div>
-            <label htmlFor="focal-point-offset">Focal Point Offset:</label>
-            <input
-              type="range"
-              id="focal-point-offset"
-              name="focal-point-offset"
-              min="0"
-              max=".3"
-              step="0.01"
-              value={focalPointOffset}
-              onChange={(e) => setfocalPointOffset(parseFloat(e.target.value))}
-            />{' '}
-          </div>
-          <div>
-            <label htmlFor="focal-point-skipAheadThreshold">
-              Skip Ahead Threshold:
-            </label>
-            <input
-              type="range"
-              id="focal-point-skipAheadThreshold"
-              name="focal-point-skipAheadThreshold"
-              min="0.01"
-              max="0.99"
-              step="0.01"
-              value={skipAheadThreshold}
-              onChange={(e) =>
-                setSkipAheadThreshold(parseFloat(e.target.value))
-              }
-            />{' '}
-          </div>
-        </div>
-      )}
-      <section
-        className={`carousel relative w-full ${
-          toggleOverlays ? 'overlays-active' : ''
-        } `}
-      >
+      <section className={`carousel relative w-full`}>
         <div
-          style={{
-            // @ts-ignore - used for illustrative purposes
-            '--center-point-offset': `${(1 + focalPointOffset * 2).toFixed(2)}`,
-            '--skip-ahead-threshold': `${skipAheadThreshold.toFixed(2)}`,
-            '--width-of-previous-slide': `${widthOfPreviousSlide}px`,
-            '--width-of-next-slide': `${widthOfNextSlide}px`,
-          }}
           tabIndex={0}
-          onFocus={() => {
-            setIsTouched(true);
-          }}
           //  Add event listeners for keyboard navigation
           onKeyUp={(e) => {
             if (e.key === 'ArrowLeft') {
@@ -169,8 +100,6 @@ export default function Home() {
           aria-label="Featured Products"
           ref={scrollContainerRef}
         >
-          <div className="center-point focal-point-start"></div>
-          <div className="center-point focal-point-end"></div>
           <div className="carousel-items flex gap-8">
             {slidesData.map((slide, index, arr) => {
               return (
@@ -200,7 +129,6 @@ export default function Home() {
                       <SlideImage
                         imgURL={slide.src}
                         altText={slide.title}
-                        isfocalSlide={focalSlideIndex === index}
                         index={index}
                       />
                     ) : slide.type === 'video' ? (
@@ -212,7 +140,6 @@ export default function Home() {
                       <InterActiveSlideWithButtons
                         title={slide.title}
                         isToggled={toggleSlideButton}
-                        isfocalSlide={focalSlideIndex === index}
                         fn={() => {
                           setToggleSlideButton(!toggleSlideButton);
                         }}
@@ -292,112 +219,3 @@ export default function Home() {
     </main>
   );
 }
-
-const SlideImage = ({
-  imgURL,
-  altText,
-  index,
-}: {
-  imgURL: string;
-  altText: string;
-  isfocalSlide: boolean;
-  index: number;
-}) => {
-  return (
-    <picture>
-      {/* Largest Size */}
-      <source
-        srcSet={`
-     https://source.unsplash.com/${imgURL}/1920x1080 1x
-    `}
-        media="(min-width: 75em)"
-      />
-      {/* Medium Size */}
-      <source
-        srcSet={`
-      https://source.unsplash.com/${imgURL}/1024x576 1x,
-      https://source.unsplash.com/${imgURL}/1920x1080 2x
-    `}
-        media="(min-width: 40em)"
-      />
-      <img
-        src={`https://source.unsplash.com/${imgURL}/400x225`}
-        alt={altText || `Description of Slide ${index + 1}`}
-        srcSet={`
-https://source.unsplash.com/${imgURL}/400x225 1x, 
-https://source.unsplash.com/${imgURL}/1024x576 2x,
-https://source.unsplash.com/${imgURL}/1920x1080 3x
-`}
-        // loading="lazy"
-        decoding="async"
-        width={1920}
-        height={1080}
-      />
-    </picture>
-  );
-};
-
-const SlideVideo = ({
-  videoURL,
-  fileType,
-}: {
-  videoURL: string;
-  fileType: string;
-}) => {
-  return (
-    <div className="video-container">
-      <video controls aria-label="Video 1" poster="video-poster.jpg">
-        {/* Add your video source and other attributes here */}
-        {fileType === 'webm' && <source src={videoURL} type="video/webm" />}
-        {fileType === 'mp4' && <source src={videoURL} type="video/mp4" />}
-        {fileType === 'ogg' && <source src={videoURL} type="video/ogg" />}
-
-        {/* Closed captions or subtitles for spoken content */}
-        <track
-          label="English"
-          kind="subtitles"
-          srcLang="en"
-          src="vtt/subtitles-en.vtt"
-          default
-        />
-        <track
-          label="Francais"
-          kind="subtitles"
-          srcLang="fr"
-          src="vtt/subtitles-fr.vtt"
-        />
-        <p>
-          Your browser does not support the video tag.
-          <br />
-          <a href="https://tinloof.com/blog">Click here</a> to view source.
-        </p>
-      </video>
-    </div>
-  );
-};
-
-const InterActiveSlideWithButtons = ({
-  fn,
-  isfocalSlide,
-  title,
-  isToggled,
-}: {
-  fn: () => void;
-  isfocalSlide: boolean;
-  title: string;
-  isToggled: boolean;
-}) => {
-  return (
-    <div>
-      <h3>{title}</h3>
-      {/* Using a negative tabindex ensures that these elements 
-      are not focusable until the user interacts with the carousel.  */}
-      <button tabIndex={isfocalSlide ? 0 : -1} onClick={fn}>
-        Click Me
-      </button>
-      <div className="interactive-slide__output">
-        {isToggled ? 'ON' : 'OFF'}
-      </div>
-    </div>
-  );
-};
