@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-// import './carousel.scss';
+import './carousel.scss';
 import _slidesData from './slides-data.json';
 import { useCarouselNew } from './useCarouselNew';
 import './globals.css';
