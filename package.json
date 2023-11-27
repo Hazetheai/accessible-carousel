@@ -9,7 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@portabletext/react": "^3.0.11",
+    "@sanity/image-url": "^1.0.2",
+    "@tinloof/js-toolkit": "^0.16.5",
+    "@tinloof/remix-toolkit": "^0.14.3",
     "next": "14.0.1",
+    "next-sanity": "^6.1.0",
     "react": "^18",
     "react-dom": "^18",
     "sass": "^1.69.5"

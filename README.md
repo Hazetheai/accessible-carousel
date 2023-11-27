@@ -29,10 +29,8 @@ The blue overlays represent how much of the prev/next image must be visible befo
 
 ## Code
 
-The main hook is `useCarouselNew.tsx` -- to be renamed once this UI element is finalized
+The main logic is in the hook `useCarousel.tsx`
 
 The Markup is under `page.tsx` with basic layout elements in `layout.tsx`
 
-Styles are in `globals.scss` & the carousel styles are in `carousel.scss`
-
-Slides data lives in `slides-data.json`
+Styles are in `globals.css`

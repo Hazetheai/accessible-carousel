@@ -1,0 +1,252 @@
+{
+  "slug": {
+    "current": "thermo-twist-cup",
+    "_type": "slug"
+  },
+  "store": {
+    "gid": "gid://shopify/Product/7972332634345",
+    "status": "active",
+    "previewImageUrl": "https://cdn.shopify.com/s/files/1/0666/3926/6025/products/product-photo5.png?v=1669824943",
+    "id": 7972332634345,
+    "options": [
+      {
+        "values": ["Black", "White"],
+        "_type": "option",
+        "name": "Color",
+        "_key": "Color"
+      }
+    ],
+    "title": "Tinloof Bottle",
+    "tags": "",
+    "vendor": "Tinloof merchandise",
+    "priceRange": {
+      "maxVariantPrice": 79.99,
+      "minVariantPrice": 79.99
+    },
+    "productType": "Accessories",
+    "slug": {
+      "current": "thermo-twist-cup",
+      "_type": "slug"
+    },
+    "createdAt": "2022-11-15T15:38:40+04:00",
+    "variants": [
+      {
+        "_updatedAt": "2022-11-30T16:15:59Z",
+        "_createdAt": "2022-11-23T16:04:11Z",
+        "_rev": "PKXdxxxKAnTg0F1ZCiPuh1",
+        "_type": "productVariant",
+        "_id": "shopifyProductVariant-43974747652329",
+        "store": {
+          "sku": "THERMALTWISTCUP000000",
+          "status": "active",
+          "createdAt": "2022-11-15T15:38:40+04:00",
+          "id": 43974747652329,
+          "inventory": {
+            "isAvailable": true,
+            "management": "SHOPIFY",
+            "policy": "CONTINUE"
+          },
+          "productGid": "gid://shopify/Product/7972332634345",
+          "option3": "",
+          "title": "Black",
+          "previewImageUrl": "https://cdn.shopify.com/s/files/1/0666/3926/6025/products/product-photo5.png?v=1669824943",
+          "option1": "Black",
+          "productId": 7972332634345,
+          "price": 79.99,
+          "option2": "",
+          "compareAtPrice": 0,
+          "gid": "gid://shopify/ProductVariant/43974747652329",
+          "isDeleted": false
+        }
+      },
+      {
+        "store": {
+          "isDeleted": false,
+          "sku": "THERMALTWISTCUPFFFFFF",
+          "compareAtPrice": 0,
+          "price": 79.99,
+          "inventory": {
+            "policy": "CONTINUE",
+            "isAvailable": true,
+            "management": "SHOPIFY"
+          },
+          "gid": "gid://shopify/ProductVariant/43974747717865",
+          "title": "White",
+          "option3": "",
+          "option1": "White",
+          "id": 43974747717865,
+          "status": "active",
+          "previewImageUrl": "https://cdn.shopify.com/s/files/1/0666/3926/6025/products/product-photow5.png?v=1669824943",
+          "createdAt": "2022-11-15T15:38:40+04:00",
+          "option2": "",
+          "productId": 7972332634345,
+          "productGid": "gid://shopify/Product/7972332634345"
+        },
+        "_updatedAt": "2022-11-30T16:15:59Z",
+        "_createdAt": "2022-11-23T16:04:11Z",
+        "_rev": "PKXdxxxKAnTg0F1ZCiPuh1",
+        "_type": "productVariant",
+        "_id": "shopifyProductVariant-43974747717865"
+      }
+    ],
+    "descriptionHtml": "Tea or coffee? Keep them always hot with this Tinloof Bottle built with high-quality stainless steel.",
+    "isDeleted": false
+  },
+  "hoverImage": {
+    "_type": "image",
+    "asset": {
+      "_ref": "image-45fad1f60471970427f36a26765efa4095273015-2108x2108-png",
+      "_type": "reference"
+    }
+  },
+  "_id": "shopifyProduct-7972332634345",
+  "localeSeo": {
+    "de": {
+      "title": "Flasche - Tinloof Store",
+      "image": {
+        "_type": "ogImage",
+        "asset": {
+          "_ref": "image-b4c8ab90e91bb1f13e52742f19e3876695a13443-1200x630-png",
+          "_type": "reference"
+        }
+      },
+      "_type": "seo",
+      "description": "Tee oder Kaffee? Halten Sie sie immer heiß mit dieser Tinloof-Flasche aus hochwertigem Edelstahl."
+    },
+    "en": {
+      "title": "Bottle - Tinloof Store",
+      "image": {
+        "_type": "ogImage",
+        "asset": {
+          "_ref": "image-7973c93050e4b00039eb03a5106f6dbfb45540e0-1200x630-png",
+          "_type": "reference"
+        }
+      },
+      "_type": "seo",
+      "description": "Tea or coffee? Keep them always hot with this Tinloof Bottle built with high-quality stainless steel."
+    }
+  },
+  "whiteImages": [
+    {
+      "_key": "1b0852f63e04",
+      "asset": {
+        "_ref": "image-2ec6d1a74f6345a0ab76471c48fca1f17ab5e94f-2108x2108-png",
+        "_type": "reference"
+      },
+      "_type": "image"
+    },
+    {
+      "_type": "image",
+      "_key": "15f0593c3332",
+      "asset": {
+        "_ref": "image-ea34d0b060bd23bfa194364bdb12ef4635989b51-2108x2108-png",
+        "_type": "reference"
+      }
+    }
+  ],
+  "category": {
+    "title": "Accessories",
+    "orderRank": "0|100014:",
+    "translations": {
+      "_ref": "390cfea5-b9b8-4c6d-b799-42c9778dc7a1__i18n_translations",
+      "_type": "reference"
+    },
+    "_rev": "71Yv3f4vx8ROcnZ41GJS5J",
+    "_type": "category",
+    "_updatedAt": "2022-12-02T12:52:32Z",
+    "publishStatus": "public",
+    "slug": {
+      "current": "accessories",
+      "_type": "slug"
+    },
+    "_createdAt": "2022-11-30T16:42:38Z",
+    "_id": "390cfea5-b9b8-4c6d-b799-42c9778dc7a1",
+    "locale": "en"
+  },
+  "_createdAt": "2022-11-23T16:04:11Z",
+  "images": [
+    {
+      "_type": "image",
+      "_key": "59961c6d704f",
+      "asset": {
+        "_type": "reference",
+        "_ref": "image-d14a9c9f594d01d130447254793398010d093d9a-2108x2108-png"
+      }
+    },
+    {
+      "_type": "image",
+      "_key": "cfc0c58a6970",
+      "asset": {
+        "_ref": "image-45fad1f60471970427f36a26765efa4095273015-2108x2108-png",
+        "_type": "reference"
+      }
+    }
+  ],
+  "seo": {
+    "title": "Bottle - Tinloof Store",
+    "image": {
+      "_type": "ogImage",
+      "asset": {
+        "_ref": "image-7973c93050e4b00039eb03a5106f6dbfb45540e0-1200x630-png",
+        "_type": "reference"
+      }
+    },
+    "_type": "seo",
+    "description": "Tea or coffee? Keep them always hot with this Tinloof Bottle built with high-quality stainless steel."
+  },
+  "displayDescription": "Tea or coffee? Keep them always hot with this Tinloof Bottle built with high-quality stainless steel.",
+  "publishStatus": "public",
+  "displayTitle": "Thermo Bottle",
+  "translations": {
+    "color": "Color",
+    "locale": "en",
+    "sortOptions": {
+      "oldest": "Oldest",
+      "titleAscending": "A-Z",
+      "titleDescending": "Z-A",
+      "newest": "Newest",
+      "priceAscending": "Price Ascending",
+      "priceDescending": "Price Descending"
+    },
+    "noProducts": "No products found.",
+    "white": "White",
+    "viewProduct": "View Product",
+    "size": "Size",
+    "none": "None",
+    "filter": "Filter",
+    "subtotal": "Subtotal",
+    "colors": "Colors",
+    "checkout": "Checkout",
+    "black": "Black",
+    "sort": "Sort",
+    "yourCart": "Your Cart",
+    "checkoutText": "Shipping is calculated at checkout",
+    "view": "View",
+    "addToCart": "Add To Cart",
+    "_type": "globalConfigurations",
+    "oneSize": "One size",
+    "category": "Category",
+    "shop": "Shop",
+    "cart": "Cart",
+    "translations": {
+      "_weak": true,
+      "_ref": "globalConfigurations__i18n_translations",
+      "_type": "reference"
+    },
+    "mixedColors": "Mixed colors",
+    "_id": "globalConfigurations__i18n_en",
+    "remove": "Remove",
+    "_updatedAt": "2022-12-02T13:03:10Z",
+    "minRead": "Min Read",
+    "addingToCart": "Adding To Cart",
+    "_rev": "NN8Cwsht4Xk7xdDYPi7ymg",
+    "search": "Search",
+    "sizes": "Sizes",
+    "_createdAt": "2022-11-23T13:35:51Z",
+    "noItemsInCart": "No items in cart"
+  },
+  "_rev": "lRGGoXeSBFR5gIfrprdXLr",
+  "_type": "product",
+  "releaseDate": "2022-12-02",
+  "_updatedAt": "2023-01-05T13:50:06Z"
+}

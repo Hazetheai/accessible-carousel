@@ -128,6 +128,8 @@ const useCarousel = ({
   skipAheadThreshold?: number;
 }) => {
   const [focalSlideIndex, setFocalSlideIndex] = useState(initialIndex);
+  const [isAtEnd, setIsAtEnd] = useState(initialIndex !== slidesCount - 1);
+  const [isAtStart, setIsAtStart] = useState(initialIndex === 0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const prevScrollLeft = useRef(0);
   const slideRefs = useRef<HTMLDivElement[]>([]);
@@ -137,12 +139,15 @@ const useCarousel = ({
     if (!scrollContainer) return;
 
     // scrollLeft is negative in a right-to-left writing mode
-    // const scrollLeft = Math.abs(scrollContainer.scrollLeft) || 0;
+    const scrollLeft = Math.abs(scrollContainer.scrollLeft) || 0;
     // off-by-one correction for Chrome, where clientWidth is sometimes rounded down
-    // const width = scrollContainer.clientWidth + 1;
-    // const isAtStart = Math.floor(scrollLeft) === 0;
-    // const isAtEnd =
-    //   Math.ceil(width + scrollLeft) >= scrollContainer.scrollWidth;
+    const width = scrollContainer.clientWidth + 1;
+    const _isAtStart = Math.floor(scrollLeft) <= 50;
+
+    const _isAtEnd =
+      Math.ceil(width + scrollLeft) >= scrollContainer.scrollWidth - 50;
+    if (_isAtStart !== isAtStart) setIsAtStart(_isAtStart);
+    if (_isAtEnd !== isAtEnd) setIsAtEnd(_isAtEnd);
 
     // find the index of the item whose focal point is closest to the center of the scroll container
     const carouselSlides = Array.from(
@@ -173,7 +178,7 @@ const useCarousel = ({
       // isAtEnd ? slidesCount - 1 : isAtStart ? 0 : closestFocalPointIndex
       closestFocalPointIndex
     );
-  }, [focalPointOffset]);
+  }, [focalPointOffset, isAtEnd, isAtStart]);
 
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
@@ -215,19 +220,20 @@ const useCarousel = ({
     const firstFocusableInput = findFirstFocusableElement(
       slideRefs?.current[focalSlideIndex]
     );
+    const isSlideFocused = slideRefs.current.some((slide, index) => {
+      return (
+        index !== focalSlideIndex &&
+        slide === document.activeElement?.closest('.carousel-slide')
+      );
+    });
     if (
       focalSlideIndex !== null &&
+      isSlideFocused &&
       slideRefs.current[focalSlideIndex] &&
       !!findFirstFocusableElement(slideRefs.current[focalSlideIndex])
     ) {
       (firstFocusableInput as HTMLElement).focus();
     } else {
-      const isSlideFocused = slideRefs.current.some((slide, index) => {
-        return (
-          index !== focalSlideIndex &&
-          slide === document.activeElement?.closest('.carousel-slide')
-        );
-      });
       isSlideFocused && scrollContainerRef.current?.focus();
     }
   }, [focalSlideIndex, scrollContainerRef]);
@@ -281,7 +287,6 @@ const useCarousel = ({
 
       const isNotStartOrEnd =
         focalSlideIndex !== 0 && focalSlideIndex !== slidesCount - 1;
-
       if (isFocalSlide && isNotStartOrEnd) {
         const previousItem =
           reversedCarouselSlides[focalSlideIndex].previousElementSibling;
@@ -360,6 +365,8 @@ const useCarousel = ({
   return {
     scrollContainerRef,
     focalSlideIndex,
+    isAtEnd,
+    isAtStart,
     changeSlide: throttle(changeSlide),
     slideRefs,
   };
