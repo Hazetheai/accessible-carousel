@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import React, { CSSProperties, useEffect, useRef, useState } from "react";
-import type { getImageProps } from "~/utils/getImageProps";
+import React, { CSSProperties, useEffect, useRef, useState } from 'react';
+import type { getImageProps } from '@/utils/getImageProps';
 
 export function SanityImageInternal({
   alt,
-  loading = "lazy",
+  loading = 'lazy',
   elProps = {},
   imageProps,
   ...props
 }: {
   alt?: string;
-  loading?: "lazy" | "eager";
+  loading?: 'lazy' | 'eager';
   /**
    * If this <img> component's size is constrained in ways that force it to have a different
    * aspect-ratio than the native image, then `applyHotspot` will apply a CSS `object-position`
@@ -31,7 +31,7 @@ export function SanityImageInternal({
       React.ImgHTMLAttributes<HTMLImageElement>,
       HTMLImageElement
     >,
-    "src" | "srcSet" | "style" | "sizes" | "width" | "height"
+    'src' | 'srcSet' | 'style' | 'sizes' | 'width' | 'height'
   >;
 } & Parameters<typeof getImageProps>[0]) {
   const imgRef = useRef<HTMLImageElement>(null);
@@ -39,13 +39,13 @@ export function SanityImageInternal({
 
   const hotspotStyle: CSSProperties = props.applyHotspot
     ? {
-        objectFit: "cover",
+        objectFit: 'cover',
         objectPosition: props.image?.hotspot
           ? `${props.image?.hotspot.x * 100}% ${props.image?.hotspot.y * 100}%`
           : undefined,
       }
     : {};
-  const style = { ...hotspotStyle, ...imageProps.style, ...elProps.style };
+  const style = { ...hotspotStyle, ...imageProps?.style, ...elProps.style };
 
   useEffect(() => {
     // If the image was hydrated *after* it was already loaded, onload below won't be called
@@ -65,7 +65,7 @@ export function SanityImageInternal({
       key={imageProps.src}
       ref={imgRef}
       loading={loading}
-      alt={alt || props.image.alt || props.image.caption || ""}
+      alt={alt || props.image.alt || props.image.caption || ''}
       {...elProps}
       {...imageProps}
       style={style}
@@ -74,7 +74,7 @@ export function SanityImageInternal({
         setLoaded(true);
       }}
       data-loaded={loaded}
-      fetchPriority={loading === "eager" ? "high" : undefined}
+      fetchPriority={loading === 'eager' ? 'high' : undefined}
     />
   );
 }

@@ -4,7 +4,7 @@ import { formatPrice } from '@/utils/formatPrice';
 import { useGlobal } from './context/GlobalProvider';
 import { SanityImage } from './SanityImage';
 import _productData from '@/data/product-data.json';
-import { ProductProps } from '../types';
+import { ProductProps } from '../../types';
 import { useState } from 'react';
 
 const Product = ({
@@ -34,7 +34,6 @@ ProductProps) => {
       >
         <div className="group relative bg-tertiary rounded h-0 pt-full">
           <SanityImage
-            mobileMaxWidth={600}
             elProps={{
               className:
                 'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-full max-h-full',
@@ -46,7 +45,6 @@ ProductProps) => {
 
           {product.hoverImage ? (
             <SanityImage
-              mobileMaxWidth={600}
               elProps={{
                 className:
                   'z-10 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-full max-h-full opacity-0 group-hover:opacity-100 bg-tertiary rounded',

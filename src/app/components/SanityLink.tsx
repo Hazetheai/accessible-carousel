@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import React, { Ref } from "react";
-import { usePathname } from "next/navigation";
-import { LinkData } from "~/types";
-import { MinimalDocForPath } from "@tinloof/js-toolkit";
-import { getLinkProps } from "~/routing/urls";
+import Link from 'next/link';
+import React, { Ref } from 'react';
+import { usePathname } from 'next/navigation';
+import { LinkData } from '@/types';
+import { MinimalDocForPath } from '@tinloof/js-toolkit';
+import { getLinkProps } from '@/urls';
 
 export interface SanityLinkProps {
   link: LinkData | MinimalDocForPath;
@@ -28,10 +28,10 @@ export const SanityLink = React.forwardRef<
   }
 
   const link =
-    "linkType" in props.link
+    'linkType' in props.link
       ? props.link
       : ({
-          linkType: "internal",
+          linkType: 'internal',
           pageLink: props.link,
         } as LinkData);
 
@@ -40,7 +40,7 @@ export const SanityLink = React.forwardRef<
     return <span {...props.elProps}>{props.children}</span>;
   }
 
-  if (link.linkType === "external") {
+  if (link.linkType === 'external') {
     return (
       <a ref={ref} {...linkProps} {...props.elProps} tabIndex={0}>
         {props.children}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { Product as ProductType } from '../types';
+import type { Product as ProductType } from '../../types';
 import { useCarousel } from '../useCarousel';
 import Product from './Product';
 
