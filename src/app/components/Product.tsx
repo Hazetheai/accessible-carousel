@@ -30,7 +30,7 @@ ProductProps) => {
         // href={`${
         //   translations.locale === 'en' ? '' : `/${translations.locale}`
         // }/products/${product.store.slug.current}`}
-        href={'#'}
+        href={'#0'}
       >
         <div className="group relative bg-tertiary rounded h-0 pt-full">
           <SanityImage
