@@ -11,8 +11,8 @@ export default async function Home() {
   );
 
   return (
-    <main className="pl-2 xl:px-12 py-12 min-h-screen flex flex-col justify-between items-center">
-      <h1 className="text-5xl mb-4 ml-[5%] xl:ml-0">
+    <main className="xl:px-12 py-12 min-h-screen flex flex-col justify-between items-center">
+      <h1 className="text-5xl mb-4 ml-10 xl:ml-0">
         How to develop an accessible carousel
       </h1>
       <a
