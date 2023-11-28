@@ -5,24 +5,27 @@ import type { Product as ProductType } from '../../types';
 import { useCarousel } from '../useCarousel';
 import Product from './Product';
 import Link from 'next/link';
-
+import classNames from 'classnames';
 type Props = { products: ProductType[] };
 
 const Carousel = (props: Props) => {
   const {
     focalSlideIndex,
     changeSlide,
+    scrollToIndex,
     scrollContainerRef,
     slideRefs,
     isAtEnd,
     isAtStart,
   } = useCarousel({
     slidesCount: props.products.length,
-    focalPointOffset: 0.25,
+    focalPointOffset: 0.15,
     skipAheadThreshold: 0.7,
     initialIndex: 0,
   });
   const isJS = !!changeSlide;
+
+  const leftPaddingOffset = 'pl-10 xl:pl-0';
 
   // remove no-js class on load
   useEffect(() => {
@@ -33,10 +36,27 @@ const Carousel = (props: Props) => {
   }, [isJS]);
   return (
     <>
-      <section className={`carousel relative w-full mb-12 max-w-7xl mx-auto`}>
-        <div className=" sm:block absolute top-0 left-0 w-4 md:w-8 h-full z-20 bg-gradient-to-r from-white"></div>
-        <div className=" sm:block absolute top-0 right-0 w-4 md:w-8 h-full z-20 bg-gradient-to-l from-white"></div>
-        <div className="flex justify-between items-baseline relative z-30 px-4 pl-0">
+      <section
+        className={`carousel relative w-full mb-12 max-w-7xl -ml-2 xl:mx-auto`}
+      >
+        <div
+          className={classNames(
+            'sm:block absolute top-0 left-0 w-4 md:w-8 h-full z-20 bg-gradient-to-r from-white transition-opacity ease-in-out duration-300',
+            isAtStart ? 'opacity-0' : 'opacity-100'
+          )}
+        ></div>
+        <div
+          className={classNames(
+            'sm:block absolute top-0 right-0 w-4 md:w-8 h-full z-20 bg-gradient-to-l from-white transition-opacity ease-in-out duration-300',
+            isAtEnd ? 'opacity-0' : 'opacity-100'
+          )}
+        ></div>
+        <div
+          className={classNames(
+            'flex justify-between items-baseline relative z-30 pr-2 lg:pr-10',
+            leftPaddingOffset
+          )}
+        >
           <h2 className="text-3xl mb-6">Title for carousel of products</h2>
           <Link aria-label="View All" href={'#0'}>
             View All
@@ -55,17 +75,17 @@ const Carousel = (props: Props) => {
               e.preventDefault();
             }
           }}
-          className={`carousel-scroll-container overflow-x-auto scroll-snap-type-x-proximity scroll-smooth ${
-            !!changeSlide ? 'snap-none' : 'snap-x snap-proximity'
-          }
-
-      `}
+          className={classNames(
+            `carousel-scroll-container overflow-x-auto scroll-snap-type-x-proximity scroll-smooth`,
+            !!changeSlide ? 'snap-none' : 'snap-x snap-proximity',
+            leftPaddingOffset
+          )}
           role="region"
           aria-roledescription="carousel"
           aria-label="Featured Products"
           ref={scrollContainerRef}
         >
-          <div className="carousel-items flex gap-4 lg:gap-8">
+          <div className="carousel-items flex gap-4 lg:gap-8 mb-4">
             {props.products.map((product, index, arr) => {
               return (
                 <div
@@ -125,7 +145,7 @@ const Carousel = (props: Props) => {
           role="group"
           className={`carousel-controls ${
             isJS ? 'block' : 'hidden'
-          } cursor-pointer absolute -bottom-20  w-full mx-auto flex justify-center lg:justify-end p-4 gap-4`}
+          } cursor-pointer absolute -bottom-20  w-full mx-auto flex justify-center lg:justify-end p-4 gap-4 pr-2 lg:pr-10`}
           aria-label="Carousel controls"
         >
           <button
@@ -177,6 +197,35 @@ const Carousel = (props: Props) => {
               />
             </svg>
           </button>
+        </div>
+        <div
+          className={classNames(
+            'hidden lg:flex absolute -bottom-20 pl-0 p-4',
+            leftPaddingOffset
+          )}
+        >
+          <div className="flex gap-[2px]">
+            {props.products.map((product, index) => {
+              return (
+                <button
+                  key={product._id}
+                  className={`carousel-bullet w-[12px] h-[3px] rounded-none transition-colors duration-300 ${
+                    focalSlideIndex === index ||
+                    focalSlideIndex === index - 1 ||
+                    focalSlideIndex === index + 1
+                      ? 'bg-black'
+                      : 'bg-[#D9D9D9]'
+                  }`}
+                  title={product.displayTitle || `Slide ${index + 1}`}
+                  aria-label={`Slide ${index + 1}`}
+                  aria-current={focalSlideIndex === index ? 'true' : 'false'}
+                  onClick={() => {
+                    scrollToIndex(index);
+                  }}
+                ></button>
+              );
+            })}
+          </div>
         </div>
       </section>
 

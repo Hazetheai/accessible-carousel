@@ -368,6 +368,7 @@ const useCarousel = ({
     isAtEnd,
     isAtStart,
     changeSlide: throttle(changeSlide),
+    scrollToIndex,
     slideRefs,
   };
 };

@@ -1,9 +1,7 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import fonts from '@/fonts';
 
 import config from '@/config';
-
-const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: config.siteName,
@@ -17,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html className="no-js" lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={fonts}>{children}</body>
     </html>
   );
 }
