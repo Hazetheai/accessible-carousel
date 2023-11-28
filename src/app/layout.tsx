@@ -1,10 +1,8 @@
 import type { Metadata } from 'next';
 import fonts from '@/fonts';
 
-import config from '@/config';
-
 export const metadata: Metadata = {
-  title: config.siteName,
+  title: 'Tinloof Store Carousel',
   description: 'How to develop an accessible carousel',
 };
 

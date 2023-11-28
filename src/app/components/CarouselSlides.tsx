@@ -1,42 +1,15 @@
 export const SlideImage = ({
   imgURL,
   altText,
-  index,
+  loading = 'lazy',
 }: {
+  loading?: 'lazy' | 'eager';
   imgURL: string;
   altText: string;
-  index: number;
 }) => {
   return (
-    <picture>
-      {/* Largest Size */}
-      <source
-        srcSet={`
-       https://source.unsplash.com/${imgURL}/1920x1080 1x
-      `}
-        media="(min-width: 75em)"
-      />
-      {/* Medium Size */}
-      <source
-        srcSet={`
-        https://source.unsplash.com/${imgURL}/1024x576 1x,
-        https://source.unsplash.com/${imgURL}/1920x1080 2x
-      `}
-        media="(min-width: 40em)"
-      />
-      <img
-        src={`https://source.unsplash.com/${imgURL}/400x225`}
-        alt={altText || `Description of Slide ${index + 1}`}
-        srcSet={`
-  https://source.unsplash.com/${imgURL}/400x225 1x, 
-  https://source.unsplash.com/${imgURL}/1024x576 2x,
-  https://source.unsplash.com/${imgURL}/1920x1080 3x
-  `}
-        // loading="lazy"
-        decoding="async"
-        width={1920}
-        height={1080}
-      />
+    <picture className="w-full h-full absolute top-0 left-0">
+      <img src={imgURL} alt={altText} loading={loading} decoding="async" />
     </picture>
   );
 };

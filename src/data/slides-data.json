@@ -1,63 +1,122 @@
 [
   {
-    "type": "image",
-    "title": "Image 1",
-    "src": "TCpfPxKPOvk",
-    "_id": "d290f1ee-6c54-4b01-90e6-d701748f0852"
+    "_id": "f7a5e9e5-6e0a-4e8b-9f3d-8e1b3e4c2a1a",
+    "title": "Tinloof Backpack",
+    "src": "/backpack.webp",
+    "category": "Accessories",
+    "sizes": ["Large", "Small"],
+    "colors": ["Red", "Blue", "Black"],
+    "price": "$49.99",
+    "url": "#0"
   },
   {
-    "type": "product",
-    "title": "Awesome Product 1",
-    "src": "WLUHO9A_xik",
-    "_id": "d290f1ee-6c54-4b01-90e6-d701748f0853"
+    "_id": "d4b3c2a1-8e1b-4e8b-9f3d-6e0a5e9e5f7a",
+    "title": "Tinloof Bumbag",
+    "src": "/bumbag.webp",
+    "category": "Accessories",
+    "sizes": ["Large", "Small"],
+    "colors": ["Green", "Yellow", "Gray"],
+    "price": "$29.99",
+    "url": "#0"
   },
   {
-    "type": "interactive",
-    "title": "Interactive Slide",
-    "src": "",
-    "_id": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+    "_id": "c1b2a3e4-8e1b-4e8b-9f3d-6e0a5e9e5f7a",
+    "title": "Tinloof Cap",
+    "src": "/cap.webp",
+    "category": "Accessories",
+    "sizes": ["Large", "Small"],
+    "colors": ["White", "Pink", "Purple"],
+    "price": "$19.99",
+    "url": "#0"
   },
   {
-    "type": "video",
-    "title": "Video 1",
-    "src": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-    "_id": "d290f1ee-6c54-4b01-90e6-d701748f0854",
-    "fileType": "mp4"
+    "_id": "a1b2c3d4-8e1b-4e8b-9f3d-6e0a5e9e5f7a",
+    "title": "Tinloof Flask",
+    "src": "/flask.webp",
+    "category": "Accessories",
+    "sizes": ["Large", "Small"],
+    "colors": ["Silver", "Gold", "Rose Gold"],
+    "price": "$14.99",
+    "url": "#0"
   },
   {
-    "type": "product",
-    "title": "Awesome Product 2",
-    "src": "user/erondu",
-    "_id": "d290s1ee-6c54-4b01-90e6-d701748f0855"
+    "_id": "9e8e7d6c-6e0a-4e8b-9f3d-8e1b3e4c2a1a",
+    "title": "Tinloof Hoodie",
+    "src": "/hoodie.webp",
+    "category": "Clothing",
+    "sizes": ["Large", "Small"],
+    "colors": ["Black", "Gray", "Navy"],
+    "price": "$59.99",
+    "url": "#0"
   },
   {
-    "type": "product",
-    "title": "Awesome Product 3",
-    "src": "user/erondu",
-    "_id": "d290f1ee-6c54-4b01-90e6-d701748f0855"
+    "_id": "7d6c5b4a-8e1b-4e8b-9f3d-6e0a5e9e5f7a",
+    "title": "Tinloof Jumper",
+    "src": "/jumper.webp",
+    "category": "Clothing",
+    "sizes": ["Large", "Small"],
+    "colors": ["Red", "Green", "Blue"],
+    "price": "$49.99",
+    "url": "#0"
   },
   {
-    "type": "image",
-    "title": "Image 2",
-    "src": "?nature,water",
-    "_id": "d290f1ee-6c54-4b01-90e6-d701748f0856"
+    "_id": "5b4a3c2d-8e1b-4e8b-9f3d-6e0a5e9e5f7a",
+    "title": "Tinloof Shirt",
+    "src": "/shirt.webp",
+    "category": "Clothing",
+    "sizes": ["Large", "Small"],
+    "colors": ["White", "Black", "Gray"],
+    "price": "$39.99",
+    "url": "#0"
   },
   {
-    "type": "image",
-    "title": "Image 3",
-    "src": "collection/190727",
-    "_id": "d290f1ee-6c54-4b01-90e6-d701748f0217"
+    "_id": "3c2d1e0f-8e1b-4e8b-9f3d-6e0a5e9e5f7a",
+    "title": "Tinloof Socks",
+    "src": "/socks.webp",
+    "category": "Clothing",
+    "sizes": ["Large", "Small"],
+    "colors": ["Red", "Blue", "Yellow"],
+    "price": "$9.99",
+    "url": "#0"
   },
   {
-    "type": "image",
-    "title": "Image 4",
-    "src": "collection/190727",
-    "_id": "d290f1ee-6c54-4b01-90e6-d701748f0857"
+    "_id": "1e0f9e8d-6e0a-4e8b-9f3d-8e1b3e4c2a1a",
+    "title": "Tinloof Stickers",
+    "src": "/stickers.webp",
+    "category": "Accessories",
+    "sizes": ["Large", "Small"],
+    "colors": ["Pink", "Purple", "Green"],
+    "price": "$4.99",
+    "url": "#0"
   },
   {
-    "type": "image",
-    "title": "Image 5",
-    "src": "user/traceofwind/likes",
-    "_id": "d290f1ee-6c54-4b01-90e6-d701748f0858"
+    "_id": "0f9e8d7c-8e1b-4e8b-9f3d-6e0a5e9e5f7a",
+    "title": "Tinloof Sweatpants",
+    "src": "/sweatpants.webp",
+    "category": "Clothing",
+    "sizes": ["Large", "Small"],
+    "colors": ["Black", "Gray", "Navy"],
+    "price": "$39.99",
+    "url": "#0"
+  },
+  {
+    "_id": "8d7c6b5a-8e1b-4e8b-9f3d-6e0a5e9e5f7a",
+    "title": "Tinloof T-shirt",
+    "src": "/t-shirt.webp",
+    "category": "Clothing",
+    "sizes": ["Large", "Small"],
+    "colors": ["White", "Black", "Gray"],
+    "price": "$24.99",
+    "url": "#0"
+  },
+  {
+    "_id": "6b5a4c3d-8e1b-4e8b-9f3d-6e0a5e9e5f7a",
+    "title": "Tinloof Totebag",
+    "src": "/totebag.webp",
+    "category": "Accessories",
+    "sizes": ["Large", "Small"],
+    "colors": ["Red", "Blue", "Black"],
+    "price": "$19.99",
+    "url": "#0"
   }
 ]

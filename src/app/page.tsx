@@ -1,15 +1,7 @@
-import { client } from '@/utils/sanity/client';
+import products from '@/data/slides-data.json';
 import Carousel from './components/Carousel';
 import './globals.css';
-import { PRODUCT_FRAGMENT } from './queries';
 export default async function Home() {
-  const products = await client.fetch<any[]>(
-    `*[_type == "product"]{
-    ${PRODUCT_FRAGMENT}
-  }`,
-    { requestLocale: 'en' }
-  );
-
   return (
     <main className="xl:px-12 py-12 min-h-screen flex flex-col justify-between items-center">
       <h1 className="text-5xl mb-4 ml-10 xl:ml-0">
@@ -21,7 +13,7 @@ export default async function Home() {
       >
         Skip to next section
       </a>
-      <Carousel products={products} />
+      <Carousel products={products as any} />
     </main>
   );
 }

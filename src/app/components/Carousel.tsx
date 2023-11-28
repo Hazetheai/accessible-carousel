@@ -1,12 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import classNames from 'classnames';
+import Link from 'next/link';
+import { useEffect } from 'react';
 import type { Product as ProductType } from '../../types';
 import { useCarousel } from '../useCarousel';
 import Product from './Product';
-import Link from 'next/link';
-import classNames from 'classnames';
 type Props = { products: ProductType[] };
+
+const initialIndex = 0;
 
 const Carousel = (props: Props) => {
   const {
@@ -21,7 +23,7 @@ const Carousel = (props: Props) => {
     slidesCount: props.products.length,
     focalPointOffset: 0.15,
     skipAheadThreshold: 0.7,
-    initialIndex: 0,
+    initialIndex,
   });
   const isJS = !!changeSlide;
 
@@ -108,33 +110,12 @@ const Carousel = (props: Props) => {
                       id={`carousel-item-${index + 1}-heading`}
                       className="sr-only"
                     >
-                      {product.displayTitle ||
-                        `Slide ${index + 1} of ${arr.length}`}
+                      {product.title || `Slide ${index + 1} of ${arr.length}`}
                     </figcaption>
                     <Product
                       product={product}
-                      eagerImageLoad={focalSlideIndex === index}
+                      eagerImageLoad={index <= initialIndex + 2}
                     />
-                    {/* {['image', 'product'].includes(slide.type) ? (
-                      <SlideImage
-                        imgURL={slide.src}
-                        altText={slide.title}
-                        index={index}
-                      />
-                    ) : slide.type === 'video' ? (
-                      <SlideVideo
-                        videoURL={slide.src}
-                        fileType={slide.fileType || ''}
-                      />
-                    ) : slide.type === 'interactive' ? (
-                      <InterActiveSlideWithButtons
-                        title={slide.title}
-                        isToggled={toggleSlideButton}
-                        fn={() => {
-                          setToggleSlideButton(!toggleSlideButton);
-                        }}
-                      />
-                    ) : null} */}
                   </figure>
                 </div>
               );
@@ -216,7 +197,7 @@ const Carousel = (props: Props) => {
                       ? 'bg-black'
                       : 'bg-[#D9D9D9]'
                   }`}
-                  title={product.displayTitle || `Slide ${index + 1}`}
+                  title={product.title || `Slide ${index + 1}`}
                   aria-label={`Slide ${index + 1}`}
                   aria-current={focalSlideIndex === index ? 'true' : 'false'}
                   onClick={() => {
